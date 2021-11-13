@@ -13,7 +13,7 @@
 
 #define DIR_NAME_SIZE 300
 
-#define LOG_DIR "C:/Users/Rust2/AppData/Local/Temp/logs/"
+#define LOG_DIR "/mnt/c/Users/Rust2/AppData/Local/Temp/logs/"
 
 //==================================================================
 

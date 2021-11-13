@@ -3,6 +3,11 @@
 #include "../logs/errors_and_logs.h"
 #include "../logs/log_definitions.h"
 
+//===================================================================
+
+#define GENERAL_LOGS
+
+//===================================================================
 
 #ifdef GENERAL_LOGS
 
