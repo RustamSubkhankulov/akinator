@@ -167,6 +167,8 @@ int _node_draw_graph(struct Node* node, struct Node_dot* node_dot,  LOG_PARAMS);
 
 int _tree_poisoning(struct Tree* tree, LOG_PARAMS);
 
+int _tree_cleaning(struct Tree* tree, LOG_PARAMS);
+
 int _graph_call_dot(LOG_PARAMS);
 
 //===================================================================
@@ -191,6 +193,9 @@ int _graph_call_dot(LOG_PARAMS);
 
 #define tree_poisoning(tree) \
        _tree_poisoning(tree, LOG_ARGS)
+
+#define tree_cleaning(tree) \
+       _tree_cleaning(tree, LOG_ARGS)
 
 #define tree_print(tree) \
        _tree_print(tree, LOG_ARGS)

@@ -55,6 +55,8 @@ struct Text {
 	long strings_number;
 	struct String* strings;
 	long size;
+
+	char* buf;
 };
 
 /// Function initializates text

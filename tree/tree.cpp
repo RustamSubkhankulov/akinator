@@ -34,6 +34,8 @@ int _tree_dump(struct Tree* tree, LOG_PARAMS) {
 
     fprintf(logs_file, "\n Address: <%p>\n", tree);
 
+    printf("\n\n %s \n\n", tree->root->data);
+
     fprintf(logs_file, "\n ROOT ELEMENT: <%p> Data: <" ELEM_SPEC ">\n", tree->root, tree->root->data);
 
     fprintf(logs_file, "\n</pre></div>");   
@@ -68,6 +70,8 @@ int _tree_save_to_file(struct Tree* tree, const char* filename, LOG_PARAMS) {
     if (ret == -1)
         return -1;
 
+    fprintf(tree_output, "\n");
+
     return close_file(tree_output);
 }
 
@@ -87,14 +91,14 @@ int _node_save_to_file(struct Node* node, FILE* output, LOG_PARAMS) {
 
         if (node->left_son) {
 
-            int ret = node_save_to_file(node->left_son, output);
+            int ret = node_save_to_file(node->right_son, output);
             if (ret == -1)
                 return -1;
         }
 
         if (node->right_son) {
 
-            int ret = node_save_to_file(node->right_son, output);
+            int ret = node_save_to_file(node->left_son, output);
             if (ret == -1)
                 return -1;
         }
@@ -178,8 +182,8 @@ int _graph_call_dot(LOG_PARAMS) {
         return -1;
 
     fprintf(logs_file, "\n <img width = 100%% src = ../tree_images/tree_graph%d.png"
-                       "        alt = \"Tree graph has not found\">\n",
-                                                    Graph_counter);
+                                           " alt = \"Tree graph has not found\">\n",
+                                                                     Graph_counter);
 
     Graph_counter++;
 
@@ -261,6 +265,16 @@ int _tree_clear_check(struct Tree* tree, LOG_PARAMS) {
     TREE_PTR_CHECK(tree);
 
     return is_memory_clear(tree, 1, sizeof(tree));
+}
+
+//===================================================================
+
+int _tree_cleaning(struct Tree* tree, LOG_PARAMS) {
+
+    tree_log_report();
+    TREE_PTR_CHECK(tree);
+
+    return clear_memory(tree, 1, sizeof(struct Tree));
 }
 
 //===================================================================
@@ -465,11 +479,17 @@ int _tree_ctor(struct Tree* tree, LOG_PARAMS) {
     tree_log_report();
     TREE_PTR_CHECK(tree);
 
-    if (tree_poison_check(tree) || tree_clear_check(tree) == 0) {
+    int is_poison = tree_poison_check(tree);
+    int is_clear  = tree_clear_check(tree);
+
+    if (is_poison == 0 && is_clear == 0) {
 
         error_report(TREE_STRUCT_CTOR_UNPREPARED);
         return -1;
     }
+
+    if (is_poison)
+        tree_cleaning(tree);
 
     tree->root = (struct Node*)node_allocate_memory();
     if (tree->root == NULL)

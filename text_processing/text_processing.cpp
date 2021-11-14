@@ -89,6 +89,8 @@ char* text_init(const char* filename, struct Text* text, LOG_PARAMS) {
 	if (buf == NULL)
 		return NULL;
 
+	text->buf = buf;
+
 	strings_init(buf, text);
 
 	#ifdef LOGS

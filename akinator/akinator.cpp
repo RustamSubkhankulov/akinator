@@ -6,12 +6,13 @@
 
 //===================================================================
 
-int _akinator_init_base(struct Tree* tree, const char* filename, LOG_PARAMS) {
+int _akinator_init_base(struct Tree* tree, struct Text* text, const char* filename, 
+                                                                        LOG_PARAMS) {
 
     akinator_log_report();
     TREE_PTR_CHECK(tree);
 
-    int ret = tree_read_from_file(tree, filename);
+    int ret = tree_read_from_file(tree, text, filename);
     if (ret == -1)
         return -1;
 
@@ -41,7 +42,7 @@ int _buffer_struct_init(struct Buffer_struct* buffer_struct, char* buffer,
 
 //===================================================================
 
-int _tree_read_from_file(struct Tree* tree, const char* filename, LOG_PARAMS) {
+int _tree_read_from_file(struct Tree* tree, struct Text* text, const char* filename, LOG_PARAMS) {
 
     tree_log_report();
     TREE_PTR_CHECK(tree);
@@ -52,19 +53,15 @@ int _tree_read_from_file(struct Tree* tree, const char* filename, LOG_PARAMS) {
         return -1;
     }
 
-    struct Text text = { 0 };
-
-    char* buffer = text_init(filename, &text, LOG_ARGS);
-    replace_nulls_with_spaces(buffer, text.size);
+    char* buffer = text_init(filename, text, LOG_ARGS);
+    replace_nulls_with_spaces(buffer, text->size);
 
     struct Buffer_struct buffer_struct = { 0 };
-    buffer_struct_init(&buffer_struct, buffer, (int)text.size, 0);
+    buffer_struct_init(&buffer_struct, buffer, (int)text->size, 0);
 
     int ret = node_read_from_buffer(tree->root, &buffer_struct);
     if (ret == -1) 
         return -1;
-
-    print_strings(&text, "temp.txt");
 
     //text_clear_mem(&text, buffer);
 
