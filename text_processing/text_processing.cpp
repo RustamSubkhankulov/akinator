@@ -224,6 +224,8 @@ void strings_init(char* buf, struct Text* text) {
 		if (does_contain_letters(string_start)) { 
 
 			string_start = string_skip_blank(string_start);
+			string_null_carriage_return(string_start);
+
 			length = (long)strlen(string_start);
 			text->strings_number++;
 
@@ -253,7 +255,7 @@ int does_contain_letters(const char* string) {
 	const char* string_ptr = string;
 	while (*string_ptr != '\0') {
 
-		if (isalpha(*string_ptr)) return 1;
+		if (!isblank(*string_ptr)) return 1;
 		string_ptr++;
 	}
 
@@ -269,6 +271,41 @@ char* string_skip_blank(char* string) {
 		    string++;
 
 	return string;
+}
+
+//============================================================================
+
+int replace_nulls_with_spaces(char* buffer, long size) {
+
+	assert(buffer);
+
+	for (long counter = 0; counter < size; counter++) {
+
+		if (buffer[counter] == 0)
+			buffer[counter] = 32;
+	}
+
+	buffer[size] = '\0';
+
+	return 0;
+}
+
+//============================================================================
+
+int string_null_carriage_return(char* string) {
+
+	assert(string != NULL);
+
+	int counter = 0;
+
+	while(string[counter] != '\0') {
+
+		if (string[counter] == '\r')
+			string[counter] = '\0';
+		counter++;
+	}
+
+	return 0;
 }
 
 //============================================================================

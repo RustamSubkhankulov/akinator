@@ -12,6 +12,7 @@ struct Node {
     struct Node* left_son;
     struct Node* right_son;
 
+    bool special_flag;
 };
 
 //===================================================================
@@ -31,6 +32,16 @@ struct Node_dot {
     int father;
     int depth;
     int is_left;
+};
+
+//===================================================================
+
+struct Buffer_struct {
+
+    char* buffer;
+
+    int size;
+    int pos;
 };
 
 //===================================================================
@@ -104,6 +115,10 @@ struct Node_dot {
 
 //===================================================================
 
+int _tree_save_to_file(struct Tree* tree, const char* filename, LOG_PARAMS);
+
+int _node_save_to_file(struct Node* node, FILE* output, LOG_PARAMS);
+
 int _node_dot_fill(struct Node_dot* node_dot, FILE* graph_output, 
                   int father, int depth, int is_left, LOG_PARAMS);
 
@@ -155,6 +170,12 @@ int _tree_poisoning(struct Tree* tree, LOG_PARAMS);
 int _graph_call_dot(LOG_PARAMS);
 
 //===================================================================
+
+#define node_save_to_file(node, output) \
+       _node_save_to_file(node, output, LOG_ARGS)
+
+#define tree_save_to_file(tree, filename) \
+       _tree_save_to_file(tree, filename, LOG_ARGS)
 
 #define node_dot_fill(node_dot, grapg_output, father, depth, is_left) \
        _node_dot_fill(node_dot, grapg_output, father, depth, is_left, LOG_ARGS)

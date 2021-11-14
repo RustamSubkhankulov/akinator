@@ -110,6 +110,9 @@ Invalid size of element in recalloc argument)
 DEF_ERR(209, CANNOT_ALLOCATE_MEM,
 Memory allocation error)
 
+DEF_ERR(210, INV_FOPEN_MODE,
+Invalid open mode in open_file function)
+
 
 DEF_ERR(301, TEXT_PROCESSING_ERR,
 Error during text processing)
@@ -462,4 +465,19 @@ Tree structure is unprepared for constructing)
 
 DEF_ERR(804, INV_NODE_DOT_PTR,
 Null pointer to the node_dot helping structure)
+
+DEF_ERR(805, ADD_SON_ERROR,
+Can not add son to the node due to it already exists)
+
+DEF_ERR(806, BUFFER_STRUCT_INV_PTR,
+Null pointer to thw buffer structure)
+
+DEF_ERR(807, TREE_TEXT_INV_SYNTAXIS,
+Invalid syntaxis in text file with tree base)
+
+DEF_ERR(808, TREE_TEXT_EMPTY_NODE_NAME,
+Empty name for node in text file with tree base)
+
+DEF_ERR(809, TREE_TEXT_NO_CLOSING_BRACKET,
+No closing bracket in text file with tree base)
 

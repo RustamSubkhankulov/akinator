@@ -7,7 +7,7 @@
 //===================================================================
 
 //Configuration
-#define TEX_LOGS
+#define TEXT_LOGS
 
 //===================================================================
 
@@ -41,6 +41,7 @@
 
 /// Structure contains string as char* and its length
 struct String {
+
 	char* data;
 	long length;
 	long number;
@@ -50,6 +51,7 @@ struct String {
 /// 
 /// Structure contains array of struct String, number of strings and size of text
 struct Text {
+
 	long strings_number;
 	struct String* strings;
 	long size;
@@ -142,3 +144,7 @@ void clear_buf(char* buf);
 /// @param struct Text* text pointer to text structure
 /// @param char* buf pointer to the buffer
 int text_clear_mem_(struct Text* text, char* buf, LOG_PARAMS);
+
+int string_null_carriage_return(char* string);
+
+int replace_nulls_with_spaces(char* buffer, long size);

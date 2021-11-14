@@ -11,6 +11,18 @@ static int Node_counter = 0;
 
 //===================================================================
 
+static const char* Left_arrow_label = "no";
+
+static const char* Right_arrow_label = "yes";
+
+static const char* Left_color = "#a5b8ef";
+
+static const char* Right_color = "#e9a0a4";
+
+static const char* Special_node_color = "#d2c1e6";
+
+//===================================================================
+
 int _tree_dump(struct Tree* tree, LOG_PARAMS) {
 
     tree_log_report();
@@ -22,7 +34,7 @@ int _tree_dump(struct Tree* tree, LOG_PARAMS) {
 
     fprintf(logs_file, "\n Address: <%p>\n", tree);
 
-    fprintf(logs_file, "\n ROOT ELEMENT: <%p> Data: <" ELEM_SPEC ">\n",tree->root, tree->root->data);
+    fprintf(logs_file, "\n ROOT ELEMENT: <%p> Data: <" ELEM_SPEC ">\n", tree->root, tree->root->data);
 
     fprintf(logs_file, "\n</pre></div>");   
 
@@ -39,6 +51,58 @@ int _tree_dump(struct Tree* tree, LOG_PARAMS) {
     #endif
 
     return 0; 
+}
+
+//===================================================================
+
+int _tree_save_to_file(struct Tree* tree, const char* filename, LOG_PARAMS) {
+
+    tree_log_report();
+    TREE_PTR_CHECK(tree);
+
+    FILE* tree_output = open_file(filename, "wb");
+    if (tree_output == NULL)
+        return -1;
+
+    int ret = node_save_to_file(tree->root, tree_output);
+    if (ret == -1)
+        return -1;
+
+    return close_file(tree_output);
+}
+
+//===================================================================
+
+int _node_save_to_file(struct Node* node, FILE* output, LOG_PARAMS) {
+
+    tree_log_report();
+    NODE_PTR_CHECK(node);
+
+    if (node->left_son == NULL && node->right_son == NULL)
+        fprintf(output, " { " ELEM_SPEC " } ", node->data);
+
+    else {
+
+        fprintf(output, " { " ELEM_SPEC, node->data);
+
+        if (node->left_son) {
+
+            int ret = node_save_to_file(node->left_son, output);
+            if (ret == -1)
+                return -1;
+        }
+
+        if (node->right_son) {
+
+            int ret = node_save_to_file(node->right_son, output);
+            if (ret == -1)
+                return -1;
+        }
+
+        fprintf(output, " } ");
+    }
+
+    return 0;
 }
 
 //===================================================================
@@ -61,9 +125,9 @@ int _node_dot_fill(struct Node_dot* node_dot, FILE* graph_output,
     tree_log_report();
     NODE_DOT_PTR_CHECK(node_dot);
 
-    node_dot->graph = graph_output;
-    node_dot->father = father;
-    node_dot->depth = depth;
+    node_dot->graph   = graph_output;
+    node_dot->father  = father;
+    node_dot->depth   = depth;
     node_dot->is_left = is_left;
 
     return 0;
@@ -80,7 +144,7 @@ int _tree_draw_graph(struct Tree* tree, LOG_PARAMS) {
 
     fprintf(graph, "digraph G{\n");
     fprintf(graph, "rankdir=TB;\n");
-    fprintf(graph, "node[ shape = doubleoctagon ];\n");
+    fprintf(graph, "node[ shape = doubleoctagon; style = filled ];\n");
     fprintf(graph, "edge[ arrowhead = vee ];\n");
 
     struct Node_dot node_dot = { 0 };
@@ -113,7 +177,7 @@ int _graph_call_dot(LOG_PARAMS) {
     if (ret != 0)
         return -1;
 
-    fprintf(logs_file, "\n <img src = ../tree_images/tree_graph%d.png"
+    fprintf(logs_file, "\n <img width = 100%% src = ../tree_images/tree_graph%d.png"
                        "        alt = \"Tree graph has not found\">\n",
                                                     Graph_counter);
 
@@ -147,14 +211,26 @@ int _node_draw_graph(struct Node* node, struct Node_dot* node_dot, LOG_PARAMS) {
             arrow_label = Right_arrow_label;
             arrow_color = Right_color;
         }
-        fprintf(node_dot->graph, "\n NODE%d -> NODE%d [ label =\"%s\" color = %s ]\n", 
-                                                                     node_dot->father, 
-                                                                          node_number, 
-                                                                          arrow_label,
-                                                                         arrow_color);
+        fprintf(node_dot->graph, "\n NODE%d -> NODE%d [ label =\"%s\" color = \"%s\" ];\n", 
+                                                                          node_dot->father, 
+                                                                               node_number, 
+                                                                               arrow_label,
+                                                                              arrow_color);
     }
 
-    fprintf(node_dot->graph, "\n NODE%d [label = \"" ELEM_SPEC "\"]; \n", node_number, node->data);
+    const char* node_color = 0;
+
+    if (node->special_flag)
+        node_color = Special_node_color;
+    else if (node_dot->is_left)
+        node_color = Left_color;
+    else 
+        node_color = Right_color;
+
+    fprintf(node_dot->graph, "\n NODE%d [label = \"" ELEM_SPEC "\" color = \"%s\" ]; \n", 
+                                                                         node_number, 
+                                                                          node->data, 
+                                                                         node_color);
 
     if (node->left_son != NULL) {
 
@@ -233,6 +309,12 @@ int _node_add_right_son(struct Node* node, LOG_PARAMS) {
     tree_log_report();
     NODE_PTR_CHECK(node);
 
+    if (node->right_son != NULL) {
+
+        error_report(ADD_SON_ERROR);
+        return -1;
+    }
+
     int is_ok = node_validator(node);
     if (is_ok == -1)  
         return -1;
@@ -253,6 +335,12 @@ int _node_add_left_son(struct Node* node, LOG_PARAMS) {
 
     tree_log_report();
     NODE_PTR_CHECK(node);
+
+    if (node->left_son != NULL) {
+
+        error_report(ADD_SON_ERROR);
+        return -1;
+    }
 
     void* node_ptr = node_allocate_memory();
 

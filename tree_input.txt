@@ -1,0 +1,21 @@
+{
+animal for real 
+    {
+    lives 0  in swamp
+        { frog }
+        { cat }
+    }
+    {
+    math teacher
+        {
+        addiitional courses
+            { ckubach }
+            { petrovich }
+        }
+        {
+        everyone knows
+            { obchos }
+            { d. }    
+        }
+    }
+}

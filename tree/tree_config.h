@@ -42,14 +42,6 @@ typedef const char * elem_t;
 //GRAPHVIZ
 #define TREE_GRAPHVIZ
 
-static const char* Left_arrow_label = "left";
-
-static const char* Right_arrow_label = "right";
-
-static const char* Left_color = "blue";
-
-static const char* Right_color = "red";
-
 //==================================================================
 
 //SUPPORTING DEFINITIONS
