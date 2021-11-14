@@ -481,3 +481,9 @@ Empty name for node in text file with tree base)
 DEF_ERR(809, TREE_TEXT_NO_CLOSING_BRACKET,
 No closing bracket in text file with tree base)
 
+DEF_ERR(810, NODE_INV_SPECIAL_FLAG,
+Node with special flag true do not have sons)
+
+DEF_ERR(811, INV_NODE_NAME,
+Invalid name of the node)
+

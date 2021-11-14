@@ -6,4 +6,6 @@
 
 #define AKINATOR_LOGS
 
+#define AKINATOR_TREE_VERIFICATE
+
 //===================================================================

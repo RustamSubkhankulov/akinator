@@ -24,8 +24,8 @@
                                 (unsigned)base_hash_size);
         stack->base_hash = hash;
 
-        if (stack->data != (elem_t*)(DEFAULT_PTR)
-            && stack->data != (elem_t*)POISON_PTR
+        if (stack->data != (stack_elem_t*)(DEFAULT_PTR)
+            && stack->data != (stack_elem_t*)POISON_PTR
             && stack->data != NULL) {
 
             int data_hash_size = stack->capacity 
@@ -51,8 +51,8 @@
     STACK_PTR_CHECK(stack);
 
         if (stack->data != NULL
-            && stack->data != (elem_t*)DEFAULT_PTR
-            && stack->data != (elem_t*)POISON_PTR) {
+            && stack->data != (stack_elem_t*)DEFAULT_PTR
+            && stack->data != (stack_elem_t*)POISON_PTR) {
 
             int size = stack->capacity 
                      * stack->size_of_elem;
@@ -104,7 +104,7 @@
 
     *canary_ptr = Canary_val;
 
-    int canary_offset = stack->capacity * (int)sizeof(elem_t);
+    int canary_offset = stack->capacity * (int)sizeof(stack_elem_t);
 
     canary_ptr = (int64_t*)((char*)stack->data + canary_offset);
 
@@ -162,8 +162,8 @@ int clear_mem_check_(void* base, int n, int size, LOG_PARAMS) {
     STACK_PTR_CHECK(stack);
 
     if (stack->data == NULL
-        || stack->data == (elem_t*)DEFAULT_PTR
-        || stack->data == (elem_t*)POISON_PTR) {
+        || stack->data == (stack_elem_t*)DEFAULT_PTR
+        || stack->data == (stack_elem_t*)POISON_PTR) {
 
         error_report(STK_INV_DATA_PTR);
         return -1;
@@ -199,8 +199,8 @@ int clear_mem_check_(void* base, int n, int size, LOG_PARAMS) {
     }
 
     if (stack->data != NULL
-        && stack->data != (elem_t*)DEFAULT_PTR
-        && stack->data != (elem_t*)POISON_PTR) {
+        && stack->data != (stack_elem_t*)DEFAULT_PTR
+        && stack->data != (stack_elem_t*)POISON_PTR) {
 
         int64_t* canary_ptr =(int64_t*)stack->data - 1;
 
@@ -210,7 +210,7 @@ int clear_mem_check_(void* base, int n, int size, LOG_PARAMS) {
             check_val++;
         }
 
-        int offset = stack->capacity * (int)sizeof(elem_t);
+        int offset = stack->capacity * (int)sizeof(stack_elem_t);
 
         canary_ptr =(int64_t*)((char*)stack->data + offset);
 
@@ -247,8 +247,8 @@ int stack_validator_(struct Stack* stack, LOG_PARAMS) {
         }
 
         if (stack->data != NULL
-            && stack->data != (elem_t*)DEFAULT_PTR
-            && stack->data != (elem_t*)POISON_PTR
+            && stack->data != (stack_elem_t*)DEFAULT_PTR
+            && stack->data != (stack_elem_t*)POISON_PTR
             && stack_data_hash_check(stack) == 0) {
 
             stack_error(STK_DATA_HASH_ERR, stack);
@@ -274,9 +274,9 @@ int stack_validator_(struct Stack* stack, LOG_PARAMS) {
     #endif
 
     if ((stack->capacity > 0 
-        && stack->data == (elem_t*)DEFAULT_PTR)
+        && stack->data == (stack_elem_t*)DEFAULT_PTR)
         || stack->data == NULL
-        || stack->data == (elem_t*)POISON_PTR) {
+        || stack->data == (stack_elem_t*)POISON_PTR) {
 
         error_report(STK_INV_DATA_PTR);
         check_val++;
@@ -298,7 +298,7 @@ int stack_validator_(struct Stack* stack, LOG_PARAMS) {
         error_report(STK_NO_ELEMS_PUSHED);
     }
 
-    if (stack->size_of_elem != sizeof(elem_t)
+    if (stack->size_of_elem != sizeof(stack_elem_t)
         || stack->size_of_elem <= 0) {
 
         error_report(STK_INV_SZ_ELEM);
@@ -387,7 +387,7 @@ void* recalloc_(void* ptr, int number, int prev_number,
 
     int check_value = 0;
 
-    check_value += (stack->data  != (elem_t*)POISON_PTR);
+    check_value += (stack->data  != (stack_elem_t*)POISON_PTR);
     check_value += (stack->count        != POISON_VALUE);
     check_value += (stack->capacity     != POISON_VALUE);
     check_value += (stack->size_of_elem != POISON_VALUE);
@@ -505,12 +505,12 @@ int stack_ctor_(struct Stack* stack,  LOG_PARAMS) {
             long unsigned size = (long unsigned) (new_size * stack->size_of_elem) 
                                + 2 * sizeof(int64_t);
 
-            elem_t* new_data_ptr = (elem_t*)calloc((long unsigned)size, 
+            stack_elem_t* new_data_ptr = (stack_elem_t*)calloc((long unsigned)size, 
                                                    sizeof(char));
 
         #else 
 
-            elem_t* new_data_ptr = (elem_t*)calloc((size_t)new_size, 
+            stack_elem_t* new_data_ptr = (stack_elem_t*)calloc((size_t)new_size, 
                                        (size_t)stack->size_of_elem);
         
         #endif
@@ -528,7 +528,7 @@ int stack_ctor_(struct Stack* stack,  LOG_PARAMS) {
                 char* data_ptr = (char*)new_data_ptr 
                                   + sizeof(int64_t);
 
-                stack->data = (elem_t*)data_ptr;
+                stack->data = (stack_elem_t*)data_ptr;
                 stack_set_canaries(stack);
 
             #else    
@@ -547,17 +547,17 @@ int stack_ctor_(struct Stack* stack,  LOG_PARAMS) {
 
             int64_t* data_ptr = (int64_t*)stack->data - 1;
 
-            long unsigned  size = (long unsigned) new_size * sizeof(elem_t)  
+            long unsigned  size = (long unsigned) new_size * sizeof(stack_elem_t)  
                                 + 2 * sizeof(int64_t);
 
-            long unsigned prev_size = (long unsigned) prev_capacity * sizeof(elem_t) 
+            long unsigned prev_size = (long unsigned) prev_capacity * sizeof(stack_elem_t) 
                                     + sizeof(int64_t);
 
-            elem_t* new_data_ptr = (elem_t*)recalloc(data_ptr, (int)size, 
+            stack_elem_t* new_data_ptr = (stack_elem_t*)recalloc(data_ptr, (int)size, 
                                                     (int)prev_size, sizeof(char));
         #else
-            elem_t* new_data_ptr = (elem_t*)recalloc(stack->data, new_size,
-                                            prev_capacity, sizeof(elem_t));
+            stack_elem_t* new_data_ptr = (stack_elem_t*)recalloc(stack->data, new_size,
+                                            prev_capacity, sizeof(stack_elem_t));
         #endif
 
         if (new_data_ptr == NULL)  {
@@ -568,7 +568,7 @@ int stack_ctor_(struct Stack* stack,  LOG_PARAMS) {
 
         #ifdef CANARIES
 
-            stack->data = (elem_t*)((char*)new_data_ptr + sizeof(int64_t));
+            stack->data = (stack_elem_t*)((char*)new_data_ptr + sizeof(int64_t));
             stack_set_canaries(stack);
 
         #else
@@ -590,8 +590,8 @@ int stack_ctor_(struct Stack* stack,  LOG_PARAMS) {
     stack_log_report();
     STACK_PTR_CHECK(stack);
 
-    if (stack->data == (elem_t*)DEFAULT_PTR
-        || stack->data == (elem_t*)POISON_PTR
+    if (stack->data == (stack_elem_t*)DEFAULT_PTR
+        || stack->data == (stack_elem_t*)POISON_PTR
         || stack->data == NULL) return -1;
 
     #ifdef CANARIES
@@ -653,7 +653,7 @@ int stack_dtor_(struct Stack* stack, LOG_PARAMS) {
     #endif
 
     stack_free_data(stack);
-    stack->data = (elem_t*)POISON_PTR;
+    stack->data = (stack_elem_t*)POISON_PTR;
 
     return 0;
 }
@@ -665,11 +665,11 @@ int stack_dtor_(struct Stack* stack, LOG_PARAMS) {
     stack_log_report();
     STACK_PTR_CHECK(stack);
 
-    stack->data = (elem_t*)DEFAULT_PTR;
+    stack->data = (stack_elem_t*)DEFAULT_PTR;
 
     stack->capacity = 0;
     stack->count = 0;
-    stack->size_of_elem = sizeof(elem_t);
+    stack->size_of_elem = sizeof(stack_elem_t);
 
     stack->error_code = 0;
 
@@ -745,18 +745,18 @@ int stack_dtor_(struct Stack* stack, LOG_PARAMS) {
 
         int64_t* data_ptr = (int64_t*)stack->data - 1;
 
-        long unsigned  size = (long unsigned)stack->capacity * sizeof(elem_t) 
+        long unsigned  size = (long unsigned)stack->capacity * sizeof(stack_elem_t) 
                             + 2 * sizeof(int64_t);
         
-        long unsigned  prev_size = (long unsigned)prev_capacity * sizeof(elem_t)
+        long unsigned  prev_size = (long unsigned)prev_capacity * sizeof(stack_elem_t)
                             + sizeof(int64_t);
 
-        elem_t* new_data_ptr = (elem_t*)recalloc(data_ptr, (int)size, 
+        stack_elem_t* new_data_ptr = (stack_elem_t*)recalloc(data_ptr, (int)size, 
                                        (int)prev_size, sizeof(char));
 
     #else
 
-        elem_t* new_data_ptr = (elem_t*)recalloc(stack->data,
+        stack_elem_t* new_data_ptr = (stack_elem_t*)recalloc(stack->data,
                                                  stack->capacity, 
                                                  prev_capacity,
                                                  stack->size_of_elem);
@@ -772,7 +772,7 @@ int stack_dtor_(struct Stack* stack, LOG_PARAMS) {
 
         #ifdef CANARIES
 
-            stack->data = (elem_t*)((int64_t*)new_data_ptr + 1);
+            stack->data = (stack_elem_t*)((int64_t*)new_data_ptr + 1);
             stack_set_canaries(stack);
 
         #else
@@ -789,7 +789,7 @@ int stack_dtor_(struct Stack* stack, LOG_PARAMS) {
 
 //==============================================================
 
-int stack_push_(struct Stack* stack, elem_t value, LOG_PARAMS) {
+int stack_push_(struct Stack* stack, stack_elem_t value, LOG_PARAMS) {
 
     stack_log_report();
     STACK_PTR_CHECK(stack);
@@ -840,7 +840,7 @@ int stack_push_(struct Stack* stack, elem_t value, LOG_PARAMS) {
               stack->size_of_elem, sizeof(char));
 
     int is_clear = clear_mem_check(&stack->data[stack->count], 
-                                           1, sizeof(elem_t));
+                                           1, sizeof(stack_elem_t));
 
     if (is_clear != 1)
         return -1;
@@ -850,7 +850,7 @@ int stack_push_(struct Stack* stack, elem_t value, LOG_PARAMS) {
 
 //===============================================================
 
-elem_t stack_pop_(struct Stack* stack, LOG_PARAMS, int* err) {
+stack_elem_t stack_pop_(struct Stack* stack, LOG_PARAMS, int* err) {
 
     stack_log_report();
 
@@ -859,7 +859,7 @@ elem_t stack_pop_(struct Stack* stack, LOG_PARAMS, int* err) {
         error_report(INV_STACK_PTR);
 
         if (err) *err = -1;
-        return -1;
+        return NULL;
     }
 
     if (stack->capacity != 0
@@ -868,7 +868,7 @@ elem_t stack_pop_(struct Stack* stack, LOG_PARAMS, int* err) {
         error_report(STK_UNDFLW);
 
         stack_save_hash(stack);
-        return -1;
+        return NULL;
     }
 
     #ifdef STACK_DEBUG
@@ -882,11 +882,11 @@ elem_t stack_pop_(struct Stack* stack, LOG_PARAMS, int* err) {
 
     #endif 
 
-    elem_t returning_value = stack->data[--stack->count];
+    stack_elem_t returning_value = stack->data[--stack->count];
 
     int is_clear = stack_poped_elem_set_zero(stack);
     if (is_clear == -1)
-        return -1;
+        return NULL;
 
     if (stack->count < (stack->capacity / 4)
      && stack->capacity > STACK_STARTING_SIZE) 
@@ -964,20 +964,19 @@ int stack_out_(struct Stack* stack, LOG_PARAMS) {
 
     #endif
 
-    fprintf(logs_file, "\n" "Stack <%p> Element type: " TYPE_NAME
+    fprintf(logs_file, "\n" "Stack <%p> Element type: " STACK_TYPE_NAME
                         "\n", stack);
 
     fprintf(logs_file, "Size of stack element " "%lu" "\n",
-                         sizeof(elem_t));
+                         sizeof(stack_elem_t));
 
     fprintf(logs_file, "Stack capacity: %d. Number of element in stack %d" "\n\n",
                          stack->capacity, stack->count);
 
     for (int count = 1; count <= stack->count; count++)
 
-        fprintf(logs_file, "[%d] DEC " ELEM_SPEC "  HEX %x" "\n", count,
-                                                 stack->data[count - 1], 
-                                   (unsigned int)stack->data[count - 1]);
+        fprintf(logs_file, "[%d] DEC " STACK_ELEM_SPEC  "\n", count,
+                                                 stack->data[count - 1]);
 
     fprintf(logs_file, "\n\n");
 
@@ -1001,7 +1000,7 @@ int stack_dump_(struct Stack* stack, LOG_PARAMS) {
                                   func_name, file_name, line);
 
     fprintf(logs_file, "Stack address <%p>. Stack:"
-                       " element type %s""\n\n", stack, TYPE_NAME);
+                       " element type %s""\n\n", stack, STACK_TYPE_NAME);
 
     fprintf(logs_file, "Stack origin conctruction file name: ");
 
@@ -1040,9 +1039,9 @@ int stack_dump_(struct Stack* stack, LOG_PARAMS) {
         fprintf(logs_file, "%d\n", stack->origin.orig_line);
 
 
-    fprintf(logs_file, "Size of element type is %lu\n", sizeof(elem_t));
+    fprintf(logs_file, "Size of element type is %lu\n", sizeof(stack_elem_t));
 
-    if (stack->size_of_elem != sizeof(elem_t))
+    if (stack->size_of_elem != sizeof(stack_elem_t))
         fprintf(logs_file, "ERROR: Size of element type is not equal"
                                          " size of stack element\n");
 
@@ -1090,12 +1089,12 @@ int stack_dump_(struct Stack* stack, LOG_PARAMS) {
 
         int64_t* canary_ptr1 = (int64_t*)stack->data - 1;
         int64_t* canary_ptr2 = (int64_t*)((char*)stack->data 
-                                        + (unsigned long)stack->capacity * sizeof(elem_t));
+                                        + (unsigned long)stack->capacity * sizeof(stack_elem_t));
     
         if (stack->capacity >= 0
             && stack->data != NULL
-            && stack->data != (elem_t*)POISON_PTR
-            && stack->data != (elem_t*)DEFAULT_PTR 
+            && stack->data != (stack_elem_t*)POISON_PTR
+            && stack->data != (stack_elem_t*)DEFAULT_PTR 
             && *canary_ptr1 != Canary_val)
 
             fprintf(logs_file, "ERROR: left canary protection "
@@ -1103,8 +1102,8 @@ int stack_dump_(struct Stack* stack, LOG_PARAMS) {
 
         else if (stack->capacity >= 0
             && stack->data != NULL
-            && stack->data != (elem_t*)POISON_PTR
-            && stack->data != (elem_t*)DEFAULT_PTR
+            && stack->data != (stack_elem_t*)POISON_PTR
+            && stack->data != (stack_elem_t*)DEFAULT_PTR
             && *canary_ptr2 != Canary_val)
 
             fprintf(logs_file, "ERROR: right canary protection of"
@@ -1120,17 +1119,17 @@ int stack_dump_(struct Stack* stack, LOG_PARAMS) {
     if (stack->data == NULL)
         fprintf(logs_file, "ERROR: NULL data pointer\n\n");
 
-    else if (stack->data == (elem_t*)DEFAULT_PTR && stack->capacity != 0)
+    else if (stack->data == (stack_elem_t*)DEFAULT_PTR && stack->capacity != 0)
 
         fprintf(logs_file, "ERROR: Data pointer is incorrect.\n "
                                "Can not equal DEFAULT_PTR after "
                                       "pushing or size setting");
 
-    else if (stack->data == (elem_t*)POISON_PTR)
+    else if (stack->data == (stack_elem_t*)POISON_PTR)
         fprintf(logs_file, "ERROR: POISON_PTR for stack->data"
                            " means that stack was destructed");
 
-    else if (stack->data == (elem_t*)DEFAULT_PTR 
+    else if (stack->data == (stack_elem_t*)DEFAULT_PTR 
           && stack->count == 0)
 
         fprintf(logs_file, "Data pointer is DEFAUlT_PTR "
@@ -1140,8 +1139,8 @@ int stack_dump_(struct Stack* stack, LOG_PARAMS) {
     else fprintf(logs_file, "<%p>\n", stack->data);
 
     if (stack->data != NULL
-        && stack->data != (elem_t*)POISON_PTR
-        && stack->data != (elem_t*)DEFAULT_PTR
+        && stack->data != (stack_elem_t*)POISON_PTR
+        && stack->data != (stack_elem_t*)DEFAULT_PTR
         && stack->count > 0 
         && stack->capacity > 0 
         && stack->capacity >= stack->count
@@ -1153,14 +1152,14 @@ int stack_dump_(struct Stack* stack, LOG_PARAMS) {
 
         for (int count = 0; count < stack->count; count++) {
 
-            fprintf(logs_file, "[%d]" ELEM_SPEC "\n", 
+            fprintf(logs_file, "[%d]" STACK_ELEM_SPEC "\n", 
                       count, stack->data[count - 1]);
         }
     }
 
     if (stack->data != NULL
-        && stack->data != (elem_t*)POISON_PTR
-        && stack->data != (elem_t*)DEFAULT_PTR
+        && stack->data != (stack_elem_t*)POISON_PTR
+        && stack->data != (stack_elem_t*)DEFAULT_PTR
         && !clear_mem_check(&stack->data[stack->count],
                              stack->capacity - stack->count + 1, 
                              stack->size_of_elem))

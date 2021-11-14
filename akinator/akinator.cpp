@@ -1,13 +1,187 @@
-
 #include <ctype.h>
+#include <string.h>
 
+#include "../general/general.h"
 #include "akinator.h"
 #include "../text_processing/text_processing.h"
+#include "../stack/stack.h"
+
+//===================================================================
+
+static struct Node* Node_not_found = (struct Node*)404;
+
+//===================================================================
+
+int _show_definition(struct Node* node, struct Stack* stack, FILE* output, LOG_PARAMS) {
+
+    akinator_log_report();
+    NODE_PTR_CHECK(node);
+    STACK_PTR_CHECK(stack);
+
+    fprintf(output, "\n" "Oblect \" " ELEM_SPEC " \". Characteristics: ", node->data);
+
+    for (int counter = 0; counter < stack->count; counter++)
+}
+
+//===================================================================
+
+int _akinator_get_definition(struct Tree* tree, const char* node_name, 
+                                                           LOG_PARAMS) {
+
+    akinator_log_report();
+    TREE_PTR_CHECK(tree);
+
+    if (node_name == NULL) {
+
+        error_report(INV_NODE_NAME);
+        return -1;
+    }
+
+    int64_t name_hash = get_hash((void*)node_name, strlen(node_name));
+
+    struct Stack stack = { 0 };
+    int ret = stack_ctor(&stack);
+    if (ret == -1)
+        return -1;
+
+    Node* result = akinator_tree_search(tree, &stack, name_hash);
+    if (result == Node_not_found || result == NULL) 
+        return -1;
+
+    show_definition(result, &stack, stdin);
+
+    ret = stack_dtor(&stack);
+    if (ret == -1)
+        return -1;
+
+    return 0;
+}
+
+//===================================================================
+
+int _akinator_tree_validator(struct Tree* tree, LOG_PARAMS) {
+
+    tree_log_report();
+    TREE_PTR_CHECK(tree);
+
+    if (node_visiter(tree->root, _akinator_node_validator) == -1 )
+        return -1;
+
+    else  {
+
+        #ifdef TREE_DEBUG
+
+            tree_dump(tree);
+
+        #endif
+
+        return 0;
+    }
+}
+
+//===================================================================
+
+int _akinator_node_validator(struct Node* node, LOG_PARAMS) {
+
+    tree_log_report();
+    NODE_PTR_CHECK(node);
+
+    if (node->special_flag && (!node->left_son || !node->right_son)) {
+
+        error_report(NODE_INV_SPECIAL_FLAG);
+        return -1;
+    }
+
+    return 0; 
+}
+
+//===================================================================
+
+Node* _akinator_tree_search(struct Tree* tree, struct Stack* stack, int64_t hash, LOG_PARAMS) {
+
+    akinator_log_report();
+    if (tree == NULL) {
+
+        error_report(INV_TREE_PTR);
+        return NULL;
+    }
+
+    int is_ok = akinator_tree_validator(tree);
+    if (is_ok == -1)
+        return NULL;
+
+    return akinator_node_search(tree->root, stack, hash);
+}
+
+//===================================================================
+
+Node* _akinator_node_search(struct Node* node, struct Stack* stack, int64_t hash, 
+                                                                      LOG_PARAMS) {
+
+    akinator_log_report();
+    if (node == NULL) {
+
+        error_report(INV_NODE_PTR);
+        return NULL;
+    }
+
+    int ret = stack_push(stack, node);
+    if (ret == -1)
+        return NULL;
+
+    int64_t node_data_hash = get_hash((void*)node->data, strlen(node->data));
+
+    if (node_data_hash == hash)
+        return node;
+
+    if (node->left_son != NULL) {
+
+        Node* result = akinator_node_search(node->left_son, stack, hash);
+        if (result != Node_not_found)
+            return result;
+    }
+
+    if (node->right_son != NULL) {
+
+        Node* result = akinator_node_search(node->right_son, stack, hash);
+        if (result != Node_not_found)
+            return result;
+    }
+
+    int err = 0;
+
+    stack_pop(stack, &err);
+    return Node_not_found;
+}
+
+//===================================================================
+
+int _akinator_tree_ctor(struct Tree* tree, LOG_PARAMS) {
+
+    akinator_log_report();
+    TREE_PTR_CHECK(tree);
+
+    int ret = tree_ctor(tree);
+    if (ret == -1)
+        return -1;
+
+    ret = node_init(tree->root, "Неизвестно кто");
+    if (ret == -1)
+        return -1;
+
+    tree_draw_graph(tree);
+
+    AKINATOR_TREE_VERIFICATION(tree);
+
+    return 0;
+}
 
 //===================================================================
 
 int _akinator_init_base(struct Tree* tree, struct Text* text, const char* filename, 
                                                                         LOG_PARAMS) {
+
+    AKINATOR_TREE_VERIFICATION(tree);
 
     akinator_log_report();
     TREE_PTR_CHECK(tree);
@@ -15,6 +189,8 @@ int _akinator_init_base(struct Tree* tree, struct Text* text, const char* filena
     int ret = tree_read_from_file(tree, text, filename);
     if (ret == -1)
         return -1;
+
+    AKINATOR_TREE_VERIFICATION(tree);
 
     return 0;
 }

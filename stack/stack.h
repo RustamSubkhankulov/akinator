@@ -41,7 +41,7 @@ struct Stack {
 	
     #endif 
 
-	elem_t* data;
+	stack_elem_t* data;
 	int count;
 	int capacity;
 	int size_of_elem;
@@ -189,11 +189,11 @@ int stack_dtor_(struct Stack* stack, LOG_PARAMS);
 /// if stack needs to be extended
 /// Updates hash in HASH protection mode
 /// Calles stack_validator_ at the end
-int stack_push_(struct Stack* stack, elem_t value, LOG_PARAMS);
+int stack_push_(struct Stack* stack, stack_elem_t value, LOG_PARAMS);
 
-elem_t stack_pop_(struct Stack* stack, LOG_PARAMS, int* err = NULL);
+stack_elem_t stack_pop_(struct Stack* stack, LOG_PARAMS, int* err = NULL);
 
-//elem_t stack_summ_(stack* stack, LOG_PARAMS, int* err = NULL);
+//stack_elem_t stack_summ_(stack* stack, LOG_PARAMS, int* err = NULL);
 //
 
 //===================================================================

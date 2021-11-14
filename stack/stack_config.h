@@ -2,22 +2,24 @@
 
 #include <stdint.h>
 
+#include "../tree/tree.h"
+
 //========================================================
 
 /// Element type using in stack
 /// 
 /// Typedef for type that will be using in stack
-typedef float elem_t;
+typedef struct Node*  stack_elem_t;
 
 
 /// Name of the element
 ///
 /// String definition for the name of element type using in stack
-#define TYPE_NAME "int"
+#define STACK_TYPE_NAME " struct Node* "
 
-#define ELEM_SPEC "%d"
+#define STACK_ELEM_SPEC "%p"
 
-#define ELEM_SPEC_2 "%d"
+#define STACK_ELEM_SPEC_2 "%p"
 
 //=========================================================
 
