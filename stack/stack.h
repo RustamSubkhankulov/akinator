@@ -1,8 +1,8 @@
 #pragma once
 
-#include "errors_and_logs.h"
+#include "../logs/errors_and_logs.h"
 #include "../general/general.h"
-#include "log_definitions.h"
+#include "../logs/errors_and_logs.h"
 #include "stack_config.h"
 
 //===================================================================

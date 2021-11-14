@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 #include "stack.h"
-#include "errors_and_logs.h"
+#include "../logs/errors_and_logs.h"
 
 //===================================================================
 
@@ -265,7 +265,7 @@ int stack_validator_(struct Stack* stack, LOG_PARAMS) {
             check_val++;
         }
 
-    #endif STACK_DEBUG
+    #endif
 
     #ifdef CANARIES
 
@@ -510,8 +510,8 @@ int stack_ctor_(struct Stack* stack,  LOG_PARAMS) {
 
         #else 
 
-            elem_t* new_data_ptr = (elem_t*)calloc(new_size, 
-                                        stack->size_of_elem);
+            elem_t* new_data_ptr = (elem_t*)calloc((size_t)new_size, 
+                                       (size_t)stack->size_of_elem);
         
         #endif
 
