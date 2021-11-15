@@ -34,8 +34,6 @@ int _tree_dump(struct Tree* tree, LOG_PARAMS) {
 
     fprintf(logs_file, "\n Address: <%p>\n", tree);
 
-    printf("\n\n %s \n\n", tree->root->data);
-
     fprintf(logs_file, "\n ROOT ELEMENT: <%p> Data: <" ELEM_SPEC ">\n", tree->root, tree->root->data);
 
     fprintf(logs_file, "\n</pre></div>");   

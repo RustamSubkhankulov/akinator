@@ -9,7 +9,7 @@
 /// Element type using in stack
 /// 
 /// Typedef for type that will be using in stack
-typedef struct Node*  stack_elem_t;
+typedef Node* stack_elem_t;
 
 
 /// Name of the element

@@ -487,3 +487,9 @@ Node with special flag true do not have sons)
 DEF_ERR(811, INV_NODE_NAME,
 Invalid name of the node)
 
+DEF_ERR(812, INV_COMPARE_OBJ_PTR,
+Invalid pointer to the compare_obj structure)
+
+DEF_ERR(813, TREE_INV_SEARCH,
+Search for the node that is not an object)
+
