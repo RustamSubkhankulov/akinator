@@ -493,3 +493,6 @@ Invalid pointer to the compare_obj structure)
 DEF_ERR(813, TREE_INV_SEARCH,
 Search for the node that is not an object)
 
+DEF_ERR(814, INV_CASE_IN_AKINATOR_MENU,
+Invalid answer case in menu. How it even possible?)
+

@@ -6,6 +6,17 @@
 
 //===================================================================
 
+int _clearstdin(LOG_PARAMS) {
+
+    general_log_report();
+
+    while (getchar() != '\n') {;}
+
+    return 0;
+}
+
+//===================================================================
+
 FILE* _open_file(const char* filename, const char* mode, LOG_PARAMS) {
 
     general_log_report();

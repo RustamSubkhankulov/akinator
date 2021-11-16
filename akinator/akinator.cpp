@@ -12,7 +12,17 @@ static struct Node* Node_not_found = (struct Node*)404;
 
 //===================================================================
 
-static int _get_menu_answer(LOG_PARAMS) {}
+static int _print_line_of_stars(LOG_PARAMS);
+
+static int _akinator_show_menu(LOG_PARAMS);
+
+static int _akinator_get_answer(LOG_PARAMS);
+
+static int _akinator_say_hello(LOG_PARAMS);
+
+static int _akinator_say_bye_bye(LOG_PARAMS);
+
+static int _akinator_read_node_name(struct Tree* tree, LOG_PARAMS);
 
 //===================================================================
 
@@ -37,25 +47,181 @@ static int _akinator_show_menu(LOG_PARAMS) {
     akinator_log_report();
 
     print_line_of_stars();
-    printf("WELCOME TO AKINATOR\n");
-    print_line_of_stars();
 
     printf("Choose a mode:\n\n");
-    printf("1. Objects compare 2. Get object definition 3.Guess the object.\n");
-
-    print_line_of_stars();
+    printf("1. Objects compare 2. Get object definition 3.Guess the object. 4.Quit\n");
 
     return 0;
 }
 
 //===================================================================
 
-int _akinator_play_game(struct Tree* tree, LOG_PARAMS) {
+static int _akinator_get_answer(LOG_PARAMS) {
+
+    akinator_log_report();
+
+    int answer = 0;
+
+    printf("Your choise: ");
+
+    int scanned = scanf("%d", &answer);
+    clearstdin();
+
+    while (answer < 1 || answer > 4 || scanned != 1) {
+
+            if (scanned != 1)
+                printf("\n An error occurred in reading answer. "
+                                            "Please, try again. \n\n");
+
+            if (answer < 1 || answer > 4) 
+                printf("\n Invalid number of option. "
+                                 "Please, try again. \n\n");
+
+            printf("Your choise: ");
+            scanned = scanf("%d", &answer);
+            clearstdin();
+        }
+
+    return answer;
+}
+
+//===================================================================
+
+static int _akinator_say_hello(LOG_PARAMS) {
+
+    akinator_log_report();
+
+    print_line_of_stars();
+
+    for (int i = 1; i <= 4; i++) {
+
+        printf("\n Hacking pentagon: %d%% ... \n", 25 * i);
+        ___System_Sleep(2);
+    }
+
+    printf("\nHello! I'm an artificial intellegence and I can kill all people...\n");
+    ___System_Sleep(2);
+    printf("Umm, I mean, I can play a game with you!\n\n");
+    ___System_Sleep(2);
+
+    printf("\nWARNING: make sure, that base, used to build a tree is correct.\n");
+    printf("Rules you can find in readme.md on github page of this project. Good luck!\n\n");
+
+    ___System_Sleep(3);
+
+    printf("Here are some things that I can do:\n");
+
+    return 0;
+}
+
+//===================================================================
+
+int _akinator_play_game(struct Tree* tree, LOG_PARAMS) {                             //add options
 
     akinator_log_report();
     TREE_PTR_CHECK(tree);
 
+    akinator_say_hello();
+
     akinator_show_menu();
+    int answer = akinator_get_answer();
+
+    while (answer != 4) {
+
+        switch (answer) {
+
+            case compare: {
+
+                int ret = akinator_play_compare(tree);
+                if (ret == -1)
+                    return -1;
+
+                break;
+            }
+
+            case definition: {
+
+                int ret = akinator_play_definition(tree);
+                if (ret == -1)
+                    return -1;
+
+                break;
+            }
+
+            case guess: {
+
+                int ret = akinator_play_guess(tree);
+                if (ret == -1)
+                    return -1;
+
+                break;
+            }
+
+            case quit: break;
+
+            default: {
+
+                error_report(INV_CASE_IN_AKINATOR_MENU);
+                return -1;
+            }
+        }
+
+        akinator_show_menu();
+        answer = akinator_get_answer();
+    }
+
+    akinator_say_bye_bye();
+
+    return 0;
+}
+
+//===================================================================
+
+static int _akinator_say_bye_bye(LOG_PARAMS) {
+
+    akinator_log_report();
+
+    printf("\n Don't want to play with me anymore?\n");
+    printf("Then you will be first... I mean, bye-bye!!\n");
+
+    return 0;
+}
+
+//===================================================================
+
+static int _akinator_read_node_name(LOG_PARAMS) {
+
+    akinator_log_report();
+
+    return 0;
+}
+
+//===================================================================
+
+int _akinator_play_compare(struct Tree* tree, LOG_PARAMS) {
+
+    akinator_log_report();
+    TREE_PTR_CHECK(tree);
+
+    return 0;
+}
+
+//===================================================================
+
+int _akinator_play_definition(struct Tree* tree, LOG_PARAMS) {
+
+    akinator_log_report();
+    TREE_PTR_CHECK(tree);
+
+    return 0;
+}
+
+//===================================================================
+
+int _akinator_play_guess(struct Tree* tree, LOG_PARAMS) {
+
+    akinator_log_report();
+    TREE_PTR_CHECK(tree);
 
     return 0;
 }
@@ -628,6 +794,13 @@ int _node_read_from_buffer(struct Node* node, struct Buffer_struct* buffer_struc
                                                                          &after_word, 
                                                                              &offset, 
                                                                               &symb);
+
+        if (ret != 1) {
+
+            error_report(TREE_TEXT_INV_SYNTAXIS);
+            buffer_dump(buffer_struct);
+            return -1;
+        }
 
         // printf("\n\n ret is %d %c \n\n", ret,  *(buffer_struct->buffer + buffer_struct->pos + before_word));
         

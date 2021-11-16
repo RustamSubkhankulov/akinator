@@ -44,6 +44,16 @@ struct Compare_obj {
 
 //===================================================================
 
+enum akinator_menu_answers {
+
+    compare    = 1,
+    definition = 2,
+    guess      = 3,
+    quit       = 4
+};
+
+//===================================================================
+
 #define COMPARE_OBJ_PTR_CHECK(compare_obj_ptr) {                    \
                                                                     \
     if (compare_obj_ptr == NULL) {                                  \
@@ -68,6 +78,37 @@ struct Compare_obj {
 
 #define akinator_play_game(tree) \
        _akinator_play_game(tree, LOG_ARGS)
+
+#define akinator_say_hello() \
+       _akinator_say_hello(LOG_ARGS)
+
+#define akinator_say_bye_bye() \
+       _akinator_say_bye_bye(LOG_ARGS)
+
+#define akinator_play_compare(tree) \
+       _akinator_play_compare(tree, LOG_ARGS)
+
+#define akinator_play_definition(tree) \
+       _akinator_play_definition(tree, LOG_ARGS)
+
+#define akinator_play_guess(tree) \
+       _akinator_play_guess(tree, LOG_ARGS)
+
+#define akinator_show_menu() \
+       _akinator_show_menu(LOG_ARGS)
+
+#define print_line_of_stars() \
+       _print_line_of_stars(LOG_ARGS)
+
+#define akinator_play_game(tree) \
+       _akinator_play_game(tree, LOG_ARGS)
+
+#define akinator_get_answer() \
+       _akinator_get_answer(LOG_ARGS)
+
+#define akinator_read_node_name() \
+       _akinator_read_node_name(LOG_ARGS)
+//===================================================================
 
 #define buffer_struct_init(buffer_struct, buffer, size, pos) \
        _buffer_struct_init(buffer_struct, buffer, size, pos, LOG_ARGS)
@@ -114,18 +155,17 @@ struct Compare_obj {
 #define akinator_show_difference(first, second, output) \
        _akinator_show_difference(first, second, output, LOG_ARGS)
 
-#define akinator_show_menu() \
-       _akinator_show_menu(LOG_ARGS)
-
-#define print_line_of_stars() \
-       _print_line_of_stars(LOG_ARGS)
-
-#define akinator_play_game(tree) \
-       _akinator_play_game(tree, LOG_ARGS)
-
 //===================================================================
 
+int _akinator_play_compare(struct Tree* tree, LOG_PARAMS);
+
+int _akinator_play_guess(struct Tree* tree, LOG_PARAMS);
+
+int _akinator_play_definition(struct Tree* tree, LOG_PARAMS);
+
 int _akinator_play_game(struct Tree* tree, LOG_PARAMS);
+
+//===================================================================
 
 int _compare_object_init(struct Compare_obj* object, struct Node* node, struct Stack* stack, 
                                                                                 LOG_PARAMS);

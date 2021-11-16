@@ -23,6 +23,9 @@
 
 //===================================================================
 
+#define clearstdin() \
+       _clearstdin(LOG_ARGS)
+
 #define open_file(filename, mode) \
        _open_file(filename, mode, LOG_ARGS)
 
@@ -43,6 +46,8 @@
         get_hash_(base, len, LOG_ARGS)
 
 //===================================================================
+
+int _clearstdin(LOG_PARAMS);
 
 void* _my_recalloc(void* ptr, size_t number, size_t prev_number, size_t size_of_elem,
                                                                          LOG_PARAMS);
