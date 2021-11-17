@@ -36,11 +36,13 @@ typedef const char * elem_t;
 //Calls dump of the tree every time validator is called
 #define TREE_DEBUG
 
-//Hash protection for tree
-#define TREE_HASH
-
 //GRAPHVIZ
 #define TREE_GRAPHVIZ
+
+#define TREE_CALCULATE_HASH_FROM_DATA
+
+//Definition for hash calculating
+#define HASH_POINTER_TO_CHAR
 
 //==================================================================
 

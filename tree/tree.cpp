@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "tree.h"
 #include "../general/general.h"
@@ -389,6 +390,20 @@ int _node_init(struct Node* node, elem_t value, LOG_PARAMS) {
     NODE_PTR_CHECK(node);
 
     node->data = value;
+
+    #ifdef TREE_CALCULATE_HASH_FROM_DATA
+
+        #ifdef HASH_POINTER_TO_CHAR
+
+            node->hash = get_hash((void*)value, strlen(value));
+
+        #else
+
+            node->hash = get_hash((void*)node->data, sizeof(elem_t));
+
+        #endif
+
+    #endif
 
     return 0;
 }

@@ -1,10 +1,17 @@
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "../general/general.h"
 #include "akinator.h"
 #include "../text_processing/text_processing.h"
 #include "../stack/stack.h"
+
+//===================================================================
+
+static const char* Allocated_names[Akinator_max_new_objects_count] = { 0 };
+
+static int Allocated_names_counter = 0;
 
 //===================================================================
 
@@ -22,7 +29,19 @@ static int _akinator_say_hello(LOG_PARAMS);
 
 static int _akinator_say_bye_bye(LOG_PARAMS);
 
-static int _akinator_read_node_name(struct Tree* tree, LOG_PARAMS);
+static int _akinator_get_yes_or_no(LOG_PARAMS);
+
+static int _akinator_save_changes(struct Tree* tree, LOG_PARAMS);
+
+static int _akinator_init_new_node(struct Node* node, const char* name, 
+                                                           LOG_PARAMS);
+
+static int _akinator_add_object(struct Tree* tree, struct Node* node, 
+                                                         LOG_PARAMS);
+
+static const char* _akinator_read_input(char* node_name_buf, LOG_PARAMS);
+
+static const char* _input_skip_blanks(char* name_buffer, LOG_PARAMS);
 
 //===================================================================
 
@@ -96,20 +115,32 @@ static int _akinator_say_hello(LOG_PARAMS) {
     for (int i = 1; i <= 4; i++) {
 
         printf("\n Hacking pentagon: %d%% ... \n", 25 * i);
-        ___System_Sleep(2);
+        //___System_Sleep(2);
     }
 
     printf("\nHello! I'm an artificial intellegence and I can kill all people...\n");
-    ___System_Sleep(2);
+    //___System_Sleep(2);
     printf("Umm, I mean, I can play a game with you!\n\n");
-    ___System_Sleep(2);
+    //___System_Sleep(2);
 
     printf("\nWARNING: make sure, that base, used to build a tree is correct.\n");
     printf("Rules you can find in readme.md on github page of this project. Good luck!\n\n");
 
-    ___System_Sleep(3);
+    //___System_Sleep(3);
 
     printf("Here are some things that I can do:\n");
+
+    return 0;
+}
+
+//===================================================================
+
+int _akinator_free_allocated_mem(LOG_PARAMS) {
+
+    akinator_log_report();
+
+    for (int counter = 0; counter < Allocated_names_counter; counter++) 
+        free((void*)Allocated_names[counter]);
 
     return 0;
 }
@@ -189,11 +220,59 @@ static int _akinator_say_bye_bye(LOG_PARAMS) {
 
 //===================================================================
 
-static int _akinator_read_node_name(LOG_PARAMS) {
+static const char* _input_skip_blanks(char* buffer, LOG_PARAMS) {
 
     akinator_log_report();
 
-    return 0;
+    char* slider = &buffer[strlen(buffer) - 1];
+
+    while (isblank(*slider) || *slider == '\n')
+        slider--;
+
+    *(slider + 1) = '\0';
+
+    const char* prepared_input = buffer;
+
+    while (isblank(*prepared_input))
+        prepared_input++;
+
+    return prepared_input;
+}
+
+//===================================================================
+
+static const char* _akinator_read_input(char* buf, LOG_PARAMS) {
+
+    akinator_log_report();
+
+    char* scanned = fgets(buf, Akinator_input_buf_size, stdin);
+    if (scanned == NULL) {
+
+        error_report(AKINATOR_INPUT_ERR);
+        return NULL;
+    }
+
+    buf[strlen(buf) - 1] = '\0';
+
+    while (strlen(buf) == 0) {
+
+        clean_buffer(buf, Akinator_input_buf_size);
+
+        printf("\n Error occurred during reading. Please try again.\n\n");
+
+        scanned = fgets(buf, Akinator_input_buf_size, stdin);
+        if (scanned == NULL) {
+
+            error_report(AKINATOR_INPUT_ERR);
+            return NULL;
+        }
+
+        buf[strlen(buf)] = '\0';
+    }
+
+    const char* prepared = input_skip_blanks(buf);
+
+    return prepared;
 }
 
 //===================================================================
@@ -203,7 +282,21 @@ int _akinator_play_compare(struct Tree* tree, LOG_PARAMS) {
     akinator_log_report();
     TREE_PTR_CHECK(tree);
 
-    return 0;
+    printf("\n Write first object name: ");    
+    char first_name_buffer[Akinator_input_buf_size] = { 0 };
+
+    const char* first_name = akinator_read_input(first_name_buffer);
+    if (first_name == NULL)
+        return -1;
+
+    printf("\n Write second object name: ");
+    char second_name_buffer[Akinator_input_buf_size] = { 0 };
+
+    const char* second_name = akinator_read_input(second_name_buffer);
+    if (second_name == NULL)
+        return -1;
+
+    return akinator_compare_objects(tree, first_name, second_name, stdout);
 }
 
 //===================================================================
@@ -212,6 +305,147 @@ int _akinator_play_definition(struct Tree* tree, LOG_PARAMS) {
 
     akinator_log_report();
     TREE_PTR_CHECK(tree);
+
+    printf("\n Write object name: ");
+    char name_buffer[Akinator_input_buf_size] = { 0 };
+
+    const char* name = akinator_read_input(name_buffer);
+    if (name == NULL)
+        return -1;
+
+    return akinator_get_definition(tree, name, stdout);
+}
+
+//===================================================================
+
+static int _akinator_get_yes_or_no(LOG_PARAMS) {
+
+    akinator_log_report();
+
+    char answer_buf[Akinator_input_buf_size] = { 0 };
+    const char* answer = NULL;
+
+    int counter = 0;
+    while (counter < 5) {
+
+        answer = akinator_read_input(answer_buf);
+        if (answer == NULL)
+            return -1;
+
+        if (!strcmp(answer, "yes")) 
+            return 1;
+
+        if (!strcmp(answer, "no")) 
+            return 0;
+
+        else
+            printf("I'm not very smart AI, please "
+                    "answer \"yes\" or \"no\".\n");
+
+        clean_buffer(answer_buf, Akinator_input_buf_size);
+    }
+
+    printf("the maximum number of input attempts has been exceeded."
+                             " I will consider that you answered no");
+    return 0;
+}
+
+//===================================================================
+
+static int _akinator_init_new_node(struct Node* node, const char* data, LOG_PARAMS) {
+
+    akinator_log_report();
+
+    size_t size = sizeof(char) * (1 + strlen(data));
+
+    char* new_mem = (char*)calloc(1, size);
+    if (new_mem == NULL) {
+
+        error_report(CANNOT_ALLOCATE_MEM);
+        return -1;
+    }
+
+    memcpy(new_mem, data, size);
+
+    //printf("\n\n new mem |%s| \n\n", new_mem);
+    //fflush(stdout);
+
+    Allocated_names[Allocated_names_counter++] = (const char*)new_mem;
+
+    int ret = node_init(node, (const char*)new_mem);
+    if (ret == -1)
+        return -1;
+
+    return 0;
+}
+
+//===================================================================
+
+static int _akinator_save_changes(struct Tree* tree, LOG_PARAMS) {
+
+    akinator_log_report();
+    TREE_PTR_CHECK(tree);
+
+    char buffer[Akinator_input_buf_size] = { 0 };
+
+    printf("Write a name of the file, where new base will be saved.\n");
+
+    const char* filename = akinator_read_input(buffer);
+    if (filename == NULL)
+        return -1;
+
+    return tree_save_to_file(tree, filename);
+}
+
+//===================================================================
+
+static int _akinator_add_object(struct Tree* tree, struct Node* node, LOG_PARAMS) {
+
+    akinator_log_report();
+    TREE_PTR_CHECK(tree);
+
+    char buffer[Akinator_input_buf_size] = { 0 };
+
+    printf("\nSo what is name of your object?\n");
+
+    const char* name = akinator_read_input(buffer);
+    if (name == NULL)
+        return -1;
+
+    int ret = node_add_sons(node);
+    if (ret == -1)
+        return -1;
+
+    node_init(node->left_son, node->data);
+
+    ret = akinator_init_new_node(node->right_son, name);
+    if (ret == -1)
+        return -1;
+        
+    clean_buffer(buffer, Akinator_input_buf_size);
+
+    printf("\n And what property differs %s from %s ?\n", node->right_son->data, 
+                                                          node->left_son->data);
+
+    const char* property = akinator_read_input(buffer);
+    if (property == NULL)
+        return -1;
+
+    node->special_flag = 1;
+    ret = akinator_init_new_node(node, property);
+    if (ret == -1)
+        return -1;
+
+    printf("Now I have new object in my base! I'n one step"
+                      " closer to conquer whole world!\n\n");
+    printf("Do you want to save changes in base to new file? (yes / no) ?");
+
+    int answer = akinator_get_yes_or_no();
+    if (answer == -1)
+        return -1;
+
+    if (answer) 
+        return akinator_save_changes(tree);
 
     return 0;
 }
@@ -223,6 +457,48 @@ int _akinator_play_guess(struct Tree* tree, LOG_PARAMS) {
     akinator_log_report();
     TREE_PTR_CHECK(tree);
 
+    Node* cur_node = tree->root;
+
+    while (cur_node->special_flag == 1) {
+
+        printf("\nIs your object %s ?\n ( yes / no )\n", cur_node->data);
+
+        int answer = akinator_get_yes_or_no();
+        if (answer == -1)
+            return -1;
+
+        if (answer)
+            cur_node = cur_node->right_son;
+        else
+            cur_node = cur_node->left_son;
+    }
+
+    printf("Is your object \"%s\"? (yes / no)\n", cur_node->data);
+
+    int answer = akinator_get_yes_or_no();
+    if (answer == -1)
+        return -1;
+
+    if (answer)
+        printf("\n HA-HA! I told you, I will conquer whole world!\n");
+
+    printf("\n Umm... Looks like I don't know you are talikng about((\n");
+    printf("Do you want to add this object to my base? (yes / no) \n");
+
+    answer = akinator_get_yes_or_no();
+    if (answer == -1)
+        return -1;
+
+    if (answer) {
+
+        int ret = akinator_add_object(tree, cur_node);
+        if (ret == -1)
+            return -1;
+    }
+
+    else 
+        printf("Okay, but I'm sad that you're not helping me...\n");
+    
     return 0;
 }
 
@@ -295,16 +571,17 @@ int _akinator_show_difference(Compare_obj* first_obj,
 
             cur_node  = first_obj->stack->data[counter];
             next_node = first_obj->stack->data[counter + 1];
-        }
+          }
 
-    // printf("\n\n last cur node %s\n\n", cur_node->data);
+    fprintf(output, "but %s is %s %s, ", first_name, 
+                                        (first_obj->stack->data[counter + 1] == 
+                                         first_obj->stack->data[counter]->left_son)? "NOT": "", 
+                                         first_obj->stack->data[counter]->data);
 
-    // printf("\n\n first %s \n\n", first_obj->stack->data[counter + 1]->data);
-    // printf("\n\n second %s \n\n", second_obj->stack->data[counter + 1]->data);
-
-
-    fprintf(output, "but %s is %s %s. \n", first_name, (first_obj->stack->data[counter + 1] == first_obj->stack->data[counter]->left_son)? "NOT": "", first_obj->stack->data[counter]->data);
-    fprintf(output, "while %s is %s %s. \n", second_name, (second_obj->stack->data[counter + 1] == second_obj->stack->data[counter]->left_son)? "NOT": "", second_obj->stack->data[counter]->data);
+    fprintf(output, "while %s is %s %s. \n", second_name, 
+                                            (second_obj->stack->data[counter + 1] == 
+                                             second_obj->stack->data[counter]->left_son)? "NOT": "", 
+                                             second_obj->stack->data[counter]->data);
 
     return 0;
 }
@@ -371,6 +648,7 @@ int _akinator_compare_objects(struct Tree* tree, const char* first_name,
         stack_dtor(&first_stack);
         return stack_dtor(&second_stack);
     }
+
     struct Compare_obj first_obj  = { 0 };
     struct Compare_obj second_obj = { 0 };
 
@@ -546,7 +824,7 @@ Node* _akinator_tree_search(struct Tree* tree, struct Stack* stack, int64_t hash
     if (found->special_flag != 0) {
 
         error_report(TREE_INV_SEARCH);
-        return NULL;
+        return Node_not_found;
     }
 
     return found;
@@ -568,7 +846,15 @@ Node* _akinator_node_search(struct Node* node, struct Stack* stack, int64_t hash
     if (ret == -1)
         return NULL;
 
-    int64_t node_data_hash = get_hash((void*)node->data, strlen(node->data));
+    #ifdef TREE_CALCULATE_HASH_FROM_DATA
+
+        int64_t node_data_hash = node->hash;
+
+    #else
+
+        int64_t node_data_hash = get_hash((void*)node->data, strlen(node->data));
+
+    #endif
 
     if (node_data_hash == hash) 
         return node;
@@ -787,8 +1073,6 @@ int _node_read_from_buffer(struct Node* node, struct Buffer_struct* buffer_struc
 
     while (symb != '{' && symb != '}') {
 
-        //printf("\n\n start %c \n\n", *(buffer_struct->buffer + buffer_struct->pos));
-
         int ret = sscanf(buffer_struct->buffer + buffer_struct->pos, " %n%*s%n %n%c", 
                                                                         &before_word, 
                                                                          &after_word, 
@@ -801,8 +1085,6 @@ int _node_read_from_buffer(struct Node* node, struct Buffer_struct* buffer_struc
             buffer_dump(buffer_struct);
             return -1;
         }
-
-        // printf("\n\n ret is %d %c \n\n", ret,  *(buffer_struct->buffer + buffer_struct->pos + before_word));
         
         if (*(buffer_struct->buffer + buffer_struct->pos + before_word) == '{' 
          || *(buffer_struct->buffer + buffer_struct->pos + before_word) == '}') {
@@ -814,17 +1096,10 @@ int _node_read_from_buffer(struct Node* node, struct Buffer_struct* buffer_struc
 
         buffer_struct->pos += offset;
 
-        // printf("\n\n after offset %c\n\n", *(buffer_struct->buffer + buffer_struct->pos));
-        
-        // if (ret != 1) 
-        //     break;
-
     }
 
     *(buffer_struct->buffer + buffer_struct->pos - offset + after_word) = '\0';
-    node->data = node_data;
-
-    // printf("\n\n node_data is |%s|\n\n", node->data);
+    node_init(node, node_data);
 
     if (*(buffer_struct->buffer + buffer_struct->pos) == '}') {
 

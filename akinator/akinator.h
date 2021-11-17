@@ -13,6 +13,16 @@ struct Compare_obj {
 
 //===================================================================
 
+#define clean_buffer(buffer, size) {                                \
+    do                                                              \
+    {                                                               \
+        memset(buffer, 0, size * sizeof(char));                     \
+                                                                    \
+    } while(0);                                                     \
+}
+
+//===================================================================
+
 #ifdef AKINATOR_LOGS
 
     #define akinator_log_report() \
@@ -106,8 +116,27 @@ enum akinator_menu_answers {
 #define akinator_get_answer() \
        _akinator_get_answer(LOG_ARGS)
 
-#define akinator_read_node_name() \
-       _akinator_read_node_name(LOG_ARGS)
+#define akinator_read_input(buf) \
+       _akinator_read_input(buf, LOG_ARGS)
+
+#define input_skip_blanks(buffer) \
+       _input_skip_blanks(buffer, LOG_ARGS)
+
+#define akinator_get_yes_or_no() \
+       _akinator_get_yes_or_no(LOG_ARGS)
+
+#define akinator_add_object(tree, node) \
+       _akinator_add_object(tree, node, LOG_ARGS)
+
+#define akinator_init_new_node(node, data) \
+       _akinator_init_new_node(node, data, LOG_ARGS)
+
+#define akinator_save_changes(tree) \
+       _akinator_save_changes(tree, LOG_ARGS)
+
+#define akinator_free_allocated_mem() \
+       _akinator_free_allocated_mem(LOG_ARGS)
+
 //===================================================================
 
 #define buffer_struct_init(buffer_struct, buffer, size, pos) \
@@ -164,6 +193,8 @@ int _akinator_play_guess(struct Tree* tree, LOG_PARAMS);
 int _akinator_play_definition(struct Tree* tree, LOG_PARAMS);
 
 int _akinator_play_game(struct Tree* tree, LOG_PARAMS);
+
+int _akinator_free_allocated_mem(LOG_PARAMS);
 
 //===================================================================
 

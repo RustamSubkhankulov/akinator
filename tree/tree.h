@@ -9,6 +9,12 @@ struct Node {
 
     elem_t data;
 
+    #ifdef TREE_CALCULATE_HASH_FROM_DATA
+
+        int64_t hash;
+        
+    #endif
+
     struct Node* left_son;
     struct Node* right_son;
 
