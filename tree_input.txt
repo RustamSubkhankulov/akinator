@@ -1,19 +1,19 @@
 {
 animal for real 
     {
-    lives 0  in swamp
+    living in swamp
         { frog }
         { cat }
     }
     {
     math teacher
         {
-        addiitional courses
+        additional courses teacher
             { ckubach }
             { petrovich }
         }
         {
-        everyone knows
+        known by everyone
             { obchos }
             { d. }    
         }

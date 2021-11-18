@@ -358,17 +358,19 @@ static int _akinator_init_new_node(struct Node* node, const char* data, LOG_PARA
 
     size_t size = sizeof(char) * (1 + strlen(data));
 
-    char* new_mem = (char*)calloc(1, size);
-    if (new_mem == NULL) {
+    char* new_mem = strdup(data);
 
-        error_report(CANNOT_ALLOCATE_MEM);
-        return -1;
-    }
+    // char* new_mem = (char*)calloc(1, size);
+    // if (new_mem == NULL) {
 
-    memcpy(new_mem, data, size);
+    //     error_report(CANNOT_ALLOCATE_MEM);
+    //     return -1;
+    // }
 
-    //printf("\n\n new mem |%s| \n\n", new_mem);
-    //fflush(stdout);
+    // memcpy(new_mem, data, size);
+
+    // //printf("\n\n new mem |%s| \n\n", new_mem);
+    // //fflush(stdout);
 
     Allocated_names[Allocated_names_counter++] = (const char*)new_mem;
 
@@ -479,9 +481,11 @@ int _akinator_play_guess(struct Tree* tree, LOG_PARAMS) {
     if (answer == -1)
         return -1;
 
-    if (answer)
+    if (answer) {
+        
         printf("\n HA-HA! I told you, I will conquer whole world!\n");
-
+        return 0;
+    }
     printf("\n Umm... Looks like I don't know you are talikng about((\n");
     printf("Do you want to add this object to my base? (yes / no) \n");
 
