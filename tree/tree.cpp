@@ -63,7 +63,7 @@ int _tree_save_to_file(struct Tree* tree, const char* filename, LOG_PARAMS) {
 
     FILE* tree_output = open_file(filename, "wb");
     if (tree_output == NULL)
-        return -1;
+        return 0;
 
     int ret = node_save_to_file(tree->root, tree_output);
     if (ret == -1)
@@ -186,9 +186,9 @@ int _graph_call_dot(LOG_PARAMS) {
     if (ret != 0)
         return -1;
 
-    fprintf(logs_file, "\n <img width = 100%% src = ../tree_images/tree_graph%d.png"
-                                           " alt = \"Tree graph has not found\">\n",
-                                                                     Graph_counter);
+    fprintf(logs_file, "\n <img width = 100%% src =" TEMP_DIR "tree_images/tree_graph%d.png"
+                                                    " alt = \"Tree graph has not found\">\n",
+                                                                              Graph_counter);
 
     Graph_counter++;
 
@@ -437,34 +437,19 @@ int _node_delete_branch(struct Node* node, LOG_PARAMS) {
     tree_log_report();
     NODE_PTR_CHECK(node);
 
-    fprintf(logs_file, "<pre> \n\n node is " ELEM_SPEC "\n\n</pre>", node->data);
-
     if (node->left_son != NULL) {
 
         int ret = node_delete_branch(node->left_son);
         if (ret ==  -1)
             return -1;
-
-        fprintf(logs_file, "<pre> \n returned to " ELEM_SPEC " after left\n <pre>", node->data);
     }
-
-    
-
-    fprintf(logs_file, "<pre>\n left_son ptr is now %p\n</pre>", node->left_son);
-        fflush(logs_file);
 
     if (node->right_son != NULL) {
 
         int ret = node_delete_branch(node->right_son);
         if (ret == -1)
-            return -1;
-
-        fprintf(logs_file, "<pre> \n returned to " ELEM_SPEC " after right\n <pre>", node->data);
-        
+            return -1;        
     }
-
-    fprintf(logs_file, "<pre>\n right_son ptr is now %p\n</pre>", node->right_son);
-        fflush(logs_file);
 
     if (node == NULL) {
 
@@ -555,8 +540,6 @@ int _node_visiter(struct Node* node, int (*node_function)(struct Node* node, LOG
     tree_log_report();
     NODE_PTR_CHECK(node);
 
-    //fprintf(logs_file, "<pre>\n\n current node %p\n\n</pre>", node);
-
     if (node->left_son != NULL) {
         
         if (node_visiter(node->left_son, node_function) == -1)
@@ -629,10 +612,6 @@ int _node_destruct(struct Node* node, LOG_PARAMS) {
 
     tree_log_report();
     NODE_PTR_CHECK(node);
-
-    fprintf(logs_file, "<pre>\nFreeing node " ELEM_SPEC " %p\n</pre>", node->data, node);
-
-    fprintf(logs_file, "<pre> \n left %p right %p \n </pre>", node->left_son, node->right_son);
 
     free(node);
 

@@ -68,7 +68,8 @@ static int _akinator_show_menu(LOG_PARAMS) {
     print_line_of_stars();
 
     printf("Choose a mode:\n\n");
-    printf("1. Objects compare 2. Get object definition 3.Guess the object. 4.Quit\n");
+    printf("1. Objects compare 2. Get object definition 3.Guess the object. "
+                                                            "4.Save 5.Quit\n");
 
     return 0;
 }
@@ -86,13 +87,13 @@ static int _akinator_get_answer(LOG_PARAMS) {
     int scanned = scanf("%d", &answer);
     clearstdin();
 
-    while (answer < 1 || answer > 4 || scanned != 1) {
+    while (answer < compare || answer > quit || scanned != 1) {
 
             if (scanned != 1)
                 printf("\n An error occurred in reading answer. "
                                             "Please, try again. \n\n");
 
-            if (answer < 1 || answer > 4) 
+            if (answer < compare || answer > quit) 
                 printf("\n Invalid number of option. "
                                  "Please, try again. \n\n");
 
@@ -112,19 +113,28 @@ static int _akinator_say_hello(LOG_PARAMS) {
 
     print_line_of_stars();
 
-    for (int i = 1; i <= 4; i++) {
+    #ifdef HACK_PENTAGON
 
-        printf("\n Hacking pentagon: %d%% ... \n", 25 * i);
-        ___System_Sleep(2);
-    }
+        for (int i = 1; i <= 4; i++) {
 
-    printf("\nHello! I'm an artificial intellegence and I can kill all people...\n");
+            printf("\n Hacking pentagon: %d%% ... \n", 25 * i);
+            ___System_Sleep(1);
+        }
+
+    #endif
+
+    printf("\nHello! I'm an artificial intellegence and I can"
+                                       " kill all people...\n");
     ___System_Sleep(2);
+
     printf("Umm, I mean, I can play a game with you!\n\n");
     ___System_Sleep(2);
 
-    printf("\nWARNING: make sure, that base, used to build a tree is correct.\n");
-    printf("Rules you can find in readme.md on github page of this project. Good luck!\n\n");
+    printf("\nWARNING: make sure, that base, used to build"
+                                    " a tree is correct.\n");
+
+    printf("Rules you can find in readme.md on github page of"
+                               " this project. Good luck!\n\n");
 
     ___System_Sleep(3);
 
@@ -147,7 +157,7 @@ int _akinator_free_allocated_mem(LOG_PARAMS) {
 
 //===================================================================
 
-int _akinator_play_game(struct Tree* tree, LOG_PARAMS) {                             //add options
+int _akinator_play_game(struct Tree* tree, LOG_PARAMS) {                             
 
     akinator_log_report();
     TREE_PTR_CHECK(tree);
@@ -157,7 +167,7 @@ int _akinator_play_game(struct Tree* tree, LOG_PARAMS) {                        
     akinator_show_menu();
     int answer = akinator_get_answer();
 
-    while (answer != 4) {
+    while (answer != quit) {
 
         switch (answer) {
 
@@ -182,6 +192,15 @@ int _akinator_play_game(struct Tree* tree, LOG_PARAMS) {                        
             case guess: {
 
                 int ret = akinator_play_guess(tree);
+                if (ret == -1)
+                    return -1;
+
+                break;
+            }
+
+            case save: {
+
+                int ret = akinator_save_changes(tree);
                 if (ret == -1)
                     return -1;
 
@@ -241,6 +260,24 @@ static const char* _input_skip_blanks(char* buffer, LOG_PARAMS) {
 
 //===================================================================
 
+int _akinator_save_changes(struct Tree* tree, LOG_PARAMS) {
+
+    akinator_log_report();
+    TREE_PTR_CHECK(tree);
+
+    char buffer[Akinator_input_buf_size] = { 0 };
+
+    printf("Write a name of the file, where new base will be saved.\n");
+
+    const char* filename = akinator_read_input(buffer);
+    if (filename == NULL)
+        return -1;
+
+    return tree_save_to_file(tree, filename);
+}
+
+//===================================================================
+
 static const char* _akinator_read_input(char* buf, LOG_PARAMS) {
 
     akinator_log_report();
@@ -260,14 +297,8 @@ static const char* _akinator_read_input(char* buf, LOG_PARAMS) {
 
         printf("\n Error occurred during reading. Please try again.\n\n");
 
-        scanned = fgets(buf, Akinator_input_buf_size, stdin);
-        if (scanned == NULL) {
-
-            error_report(AKINATOR_INPUT_ERR);
-            return NULL;
-        }
-
-        buf[strlen(buf)] = '\0';
+        fgets(buf, Akinator_input_buf_size, stdin);
+        buf[strlen(buf) - 1] = '\0';
     }
 
     const char* prepared = input_skip_blanks(buf);
@@ -332,10 +363,10 @@ static int _akinator_get_yes_or_no(LOG_PARAMS) {
         if (answer == NULL)
             return -1;
 
-        if (!strcmp(answer, "yes")) 
+        if (!strcmp(answer, "yes") || !strcmp(answer, "y")) 
             return 1;
 
-        if (!strcmp(answer, "no")) 
+        if (!strcmp(answer, "no") || !strcmp(answer, "n")) 
             return 0;
 
         else
@@ -345,14 +376,15 @@ static int _akinator_get_yes_or_no(LOG_PARAMS) {
         clean_buffer(answer_buf, Akinator_input_buf_size);
     }
 
-    printf("the maximum number of input attempts has been exceeded."
-                             " I will consider that you answered no");
+    printf("The maximum number of input attempts has been exceeded."
+                         " I will consider that you answered no\n\n");
     return 0;
 }
 
 //===================================================================
 
-static int _akinator_init_new_node(struct Node* node, const char* data, LOG_PARAMS) {
+static int _akinator_init_new_node(struct Node* node, const char* data, 
+                                                            LOG_PARAMS) {
 
     akinator_log_report();
 
@@ -369,25 +401,8 @@ static int _akinator_init_new_node(struct Node* node, const char* data, LOG_PARA
 
 //===================================================================
 
-static int _akinator_save_changes(struct Tree* tree, LOG_PARAMS) {
-
-    akinator_log_report();
-    TREE_PTR_CHECK(tree);
-
-    char buffer[Akinator_input_buf_size] = { 0 };
-
-    printf("Write a name of the file, where new base will be saved.\n");
-
-    const char* filename = akinator_read_input(buffer);
-    if (filename == NULL)
-        return -1;
-
-    return tree_save_to_file(tree, filename);
-}
-
-//===================================================================
-
-static int _akinator_add_object(struct Tree* tree, struct Node* node, LOG_PARAMS) {
+static int _akinator_add_object(struct Tree* tree, struct Node* node, 
+                                                          LOG_PARAMS) {
 
     akinator_log_report();
     TREE_PTR_CHECK(tree);
@@ -418,7 +433,7 @@ static int _akinator_add_object(struct Tree* tree, struct Node* node, LOG_PARAMS
         
     clean_buffer(buffer, Akinator_input_buf_size);
 
-    printf("\n And what property differs %s from %s ?\n", node->right_son->data, 
+    printf("\nAnd what property differs %s from %s ?\n", node->right_son->data, 
                                                           node->left_son->data);
 
     const char* property = akinator_read_input(buffer);
@@ -430,16 +445,11 @@ static int _akinator_add_object(struct Tree* tree, struct Node* node, LOG_PARAMS
     if (ret == -1)
         return -1;
 
-    printf("Now I have new object in my base! I'n one step"
-                      " closer to conquer whole world!\n\n");
-    printf("Do you want to save changes in base to new file? (yes / no) ?");
+    printf("Wait a second, saving data in FBI base...\n");
 
-    int answer = akinator_get_yes_or_no();
-    if (answer == -1)
-        return -1;
-
-    if (answer) 
-        return akinator_save_changes(tree);
+    ___System_Sleep(1);
+    printf("\nNow I have new object in my base! I'n one step"
+                      "   closer to conquer whole world!\n\n");
 
     return 0;
 }
@@ -477,7 +487,7 @@ int _akinator_play_guess(struct Tree* tree, LOG_PARAMS) {
         
         printf("\n HA-HA! I told you, I will conquer whole world!\n");
         ___System_Sleep(3);
-        
+
         return 0;
     }
     printf("\n Umm... Looks like I don't know you are talikng about((\n");
@@ -620,7 +630,8 @@ int _akinator_compare_objects(struct Tree* tree, const char* first_name,
     if (ret == -1)
         return -1;
 
-    Node* first_result = akinator_tree_search(tree, &first_stack, first_hash);
+    Node* first_result = akinator_tree_search(tree, &first_stack, 
+                                                     first_hash);
     if (first_result == NULL) 
         return -1;
 
@@ -636,7 +647,8 @@ int _akinator_compare_objects(struct Tree* tree, const char* first_name,
     if (ret == -1)
         return -1;
 
-    Node* second_result = akinator_tree_search(tree, &second_stack, second_hash);
+    Node* second_result = akinator_tree_search(tree, &second_stack, 
+                                                      second_hash);
     if (second_result == NULL) 
         return -1;
 
@@ -704,7 +716,8 @@ int _show_definition(struct Compare_obj* obj, FILE* output, LOG_PARAMS) {
         if (cur_node->left_son == next_node)
             fprintf(output, "NOT ");
         
-        fprintf(output, "%s%c ", cur_node->data, (counter == stack->count - 2)? '.': ',');
+        fprintf(output, "%s%c ", cur_node->data, 
+               (counter == stack->count - 2)? '.': ',');
     }
 
     fprintf(output, "\n");
@@ -799,7 +812,8 @@ int _akinator_node_validator(struct Node* node, LOG_PARAMS) {
 
 //===================================================================
 
-Node* _akinator_tree_search(struct Tree* tree, struct Stack* stack, int64_t hash, LOG_PARAMS) {
+Node* _akinator_tree_search(struct Tree* tree, struct Stack* stack, int64_t hash, 
+                                                                      LOG_PARAMS) {
 
     akinator_log_report();
     if (tree == NULL) {
@@ -851,7 +865,8 @@ Node* _akinator_node_search(struct Node* node, struct Stack* stack, int64_t hash
 
     #else
 
-        int64_t node_data_hash = get_hash((void*)node->data, strlen(node->data));
+        int64_t node_data_hash = get_hash((void*)node->data, 
+                                          strlen(node->data));
 
     #endif
 
@@ -942,7 +957,8 @@ int _buffer_struct_init(struct Buffer_struct* buffer_struct, char* buffer,
 
 //===================================================================
 
-int _tree_read_from_file(struct Tree* tree, struct Text* text, const char* filename, LOG_PARAMS) {
+int _tree_read_from_file(struct Tree* tree, struct Text* text, const char* filename, 
+                                                                         LOG_PARAMS) {
 
     tree_log_report();
     TREE_PTR_CHECK(tree);
@@ -990,12 +1006,12 @@ int _buffer_dump(struct Buffer_struct* buffer_struct, LOG_PARAMS) {
                                   " border-collapse: collapse;}\n</style>");
 
     fprintf(logs_file, "<table width = \" 100%% \" "
-                           "cellspacing=\"0\" "
-                           "cellpadding=\"4\" "
-                           "border = \"5\" "
-                           "style = \" "
-                           "padding: 15px; "
-                           "background-color: lightgrey;>\"\n");
+                              "cellspacing=\"0\" "
+                              "cellpadding=\"4\" "
+                              "border = \"5\" "
+                              "style = \" "
+                              "padding: 15px; "
+                              "background-color: lightgrey;>\"\n");
 
     int counter = 0;
     while (counter < size) {
@@ -1010,7 +1026,8 @@ int _buffer_dump(struct Buffer_struct* buffer_struct, LOG_PARAMS) {
                                                  "color: white;\"> %d </td>", 
                                                              second_counter);
             else
-                fprintf(logs_file,"<td style = \"background-color: #c2e7c2\"> %d </td>", second_counter);
+                fprintf(logs_file,"<td style = \"background-color: #c2e7c2\"> %d </td>", 
+                                                                        second_counter);
         }
 
         fprintf(logs_file, "</tr><tr><td><b> Symbol </b></td>");
@@ -1048,7 +1065,8 @@ int _node_read_from_buffer(struct Node* node, struct Buffer_struct* buffer_struc
     int offset = 0;
     char symb = 0;
 
-    int scanned = sscanf(buffer_struct->buffer + buffer_struct->pos, " %c %n", &symb, &offset);
+    int scanned = sscanf(buffer_struct->buffer + buffer_struct->pos, " %c %n", 
+                                                              &symb, &offset);
     if (scanned == -1 || scanned == 0) {
 
         error_report(TEXT_PROCESSING_ERR);

@@ -8,6 +8,8 @@
 
 #define AKINATOR_TREE_VERIFICATE
 
+#define HACK_PENTAGON
+
 //===================================================================
 
 const int Akinator_input_buf_size = 50;

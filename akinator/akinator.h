@@ -59,7 +59,8 @@ enum akinator_menu_answers {
     compare    = 1,
     definition = 2,
     guess      = 3,
-    quit       = 4
+    save       = 4,
+    quit       = 5
 };
 
 //===================================================================
