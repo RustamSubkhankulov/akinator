@@ -10,6 +10,8 @@
 
 #define HACK_PENTAGON
 
+#define ESPEAK
+
 //===================================================================
 
 const int Akinator_input_buf_size = 50;

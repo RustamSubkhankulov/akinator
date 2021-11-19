@@ -9,6 +9,25 @@
 
 //===================================================================
 
+#ifdef ESPEAK
+
+    #define print_and_speak(string) {                                   \
+                                                                        \
+        ___System_Sleep(1);                                             \
+                                                                        \
+        printf("\n%s\n", string);                                       \
+                                                                        \
+        system("espeak       [" #string "]");                           \
+    }
+
+#else
+
+    #define print_and_speak(string) printf(string);
+
+#endif
+
+//===================================================================
+
 #ifdef GENERAL_LOGS
 
        #define general_log_report() \

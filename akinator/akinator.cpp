@@ -68,6 +68,7 @@ static int _akinator_show_menu(LOG_PARAMS) {
     print_line_of_stars();
 
     printf("Choose a mode:\n\n");
+
     printf("1. Objects compare 2. Get object definition 3.Guess the object. "
                                                             "4.Save 5.Quit\n");
 
