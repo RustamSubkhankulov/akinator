@@ -115,18 +115,18 @@ static int _akinator_say_hello(LOG_PARAMS) {
     for (int i = 1; i <= 4; i++) {
 
         printf("\n Hacking pentagon: %d%% ... \n", 25 * i);
-        //___System_Sleep(2);
+        ___System_Sleep(2);
     }
 
     printf("\nHello! I'm an artificial intellegence and I can kill all people...\n");
-    //___System_Sleep(2);
+    ___System_Sleep(2);
     printf("Umm, I mean, I can play a game with you!\n\n");
-    //___System_Sleep(2);
+    ___System_Sleep(2);
 
     printf("\nWARNING: make sure, that base, used to build a tree is correct.\n");
     printf("Rules you can find in readme.md on github page of this project. Good luck!\n\n");
 
-    //___System_Sleep(3);
+    ___System_Sleep(3);
 
     printf("Here are some things that I can do:\n");
 
@@ -356,21 +356,7 @@ static int _akinator_init_new_node(struct Node* node, const char* data, LOG_PARA
 
     akinator_log_report();
 
-    //size_t size = sizeof(char) * (1 + strlen(data));
-
     char* new_mem = strdup(data);
-
-    // char* new_mem = (char*)calloc(1, size);
-    // if (new_mem == NULL) {
-
-    //     error_report(CANNOT_ALLOCATE_MEM);
-    //     return -1;
-    // }
-
-    // memcpy(new_mem, data, size);
-
-    // //printf("\n\n new mem |%s| \n\n", new_mem);
-    // //fflush(stdout);
 
     Allocated_names[Allocated_names_counter++] = (const char*)new_mem;
 
@@ -405,6 +391,12 @@ static int _akinator_add_object(struct Tree* tree, struct Node* node, LOG_PARAMS
 
     akinator_log_report();
     TREE_PTR_CHECK(tree);
+
+    if (Allocated_names_counter == Akinator_max_new_objects_count) {
+
+        error_report(AKINATOR_MAX_NEW_OBJECTS);
+        return 0;
+    }
 
     char buffer[Akinator_input_buf_size] = { 0 };
 
@@ -484,6 +476,8 @@ int _akinator_play_guess(struct Tree* tree, LOG_PARAMS) {
     if (answer) {
         
         printf("\n HA-HA! I told you, I will conquer whole world!\n");
+        ___System_Sleep(3);
+        
         return 0;
     }
     printf("\n Umm... Looks like I don't know you are talikng about((\n");
@@ -496,6 +490,7 @@ int _akinator_play_guess(struct Tree* tree, LOG_PARAMS) {
     if (answer) {
 
         int ret = akinator_add_object(tree, cur_node);
+    
         if (ret == -1)
             return -1;
     }

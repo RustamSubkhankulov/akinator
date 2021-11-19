@@ -35,4 +35,4 @@ deletepng:
 	rm /mnt/c/users/rust2/appdata/local/temp/tree_images/*.png
 
 makeimagesdir: 
-	mkdir /mnt/c/users/rust2/appdata/local/temp/tree_images
+	mkdir /tmp/tree_images

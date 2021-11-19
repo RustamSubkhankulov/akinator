@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-#define TEMP_DIR "/mnt/c/users/rust2/appdata/local/temp/"
+#define TEMP_DIR "/tmp/"
 
 //===================================================================
 
