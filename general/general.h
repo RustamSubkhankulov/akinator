@@ -3,6 +3,11 @@
 #include "../logs/errors_and_logs.h"
 #include "../logs/log_definitions.h"
 
+//===================================================================
+
+#define GENERAL_LOGS
+
+//===================================================================
 
 #ifdef GENERAL_LOGS
 
@@ -17,6 +22,15 @@
 
 
 //===================================================================
+
+#define clearstdin() \
+       _clearstdin(LOG_ARGS)
+
+#define open_file(filename, mode) \
+       _open_file(filename, mode, LOG_ARGS)
+
+#define close_file(file_ptr) \
+       _close_file(file_ptr, LOG_ARGS)
 
 #define my_recalloc(ptr, number, prev_number, size_of_elem) \
        _my_recalloc(ptr, number, prev_number, size_of_elem, \
@@ -33,6 +47,8 @@
 
 //===================================================================
 
+int _clearstdin(LOG_PARAMS);
+
 void* _my_recalloc(void* ptr, size_t number, size_t prev_number, size_t size_of_elem,
                                                                          LOG_PARAMS);
 
@@ -45,3 +61,9 @@ void ___System_Sleep(float _Duration);
 int my_swap(void* first_, void* second_, size_t size);
 
 int64_t get_hash_(void* void_base, long unsigned int len, LOG_PARAMS);
+
+//===================================================================
+
+FILE* _open_file(const char* filename, const char* mode, LOG_PARAMS);
+
+int _close_file(FILE* file_prt, LOG_PARAMS);

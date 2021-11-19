@@ -110,6 +110,9 @@ Invalid size of element in recalloc argument)
 DEF_ERR(209, CANNOT_ALLOCATE_MEM,
 Memory allocation error)
 
+DEF_ERR(210, INV_FOPEN_MODE,
+Invalid open mode in open_file function)
+
 
 DEF_ERR(301, TEXT_PROCESSING_ERR,
 Error during text processing)
@@ -274,7 +277,7 @@ DEF_ERR(702, LIST_UNPREPARED,
 List structure is not prepared for constructor)
 
 DEF_ERR(703, LIST_NEXT_IS_NULL,
-NULL pointer to the sl_list.next )
+NULL pointer to the list.next )
 
 DEF_ERR(704, LIST_DATA_IS_NULL,
 Data array in list is NULL)
@@ -298,4 +301,201 @@ DEF_ERR(710, LIST_UNDERFLOW,
 No element in list)
 
 DEF_ERR(711, LIST_EMPTY_INDEX,
-This index in list is empty )
+Index in list is empty)
+
+DEF_ERR(713, LIST_INV_HEAD,
+Invalid head element of list)
+
+DEF_ERR(714, LIST_INV_TAIL,
+Invalid tail element of list)
+
+DEF_ERR(715, LIST_INV_INDEX,
+Invalid index of list element)
+
+DEF_ERR(716, LIST_PUSH_BY_ZERO,
+Can not push after zero element)
+
+DEF_ERR(717, LIST_POP_BY_ZERO,
+Can not pop from zero element)
+
+DEF_ERR(718, TAIL_EQUAL_HEAD,
+Tail is equal head while size more tha 1)
+
+DEF_ERR(719, POP_LAST_FALSE_CALL,
+Pop_last called but element is not last one)
+
+DEF_ERR(720, PUSH_FIRST_FALSE_CALL,
+Push_first called but element is not first)
+
+DEF_ERR(721, TAIL_NEXT_IS_NOT_ZERO,
+Next element for tail is not zero)
+
+DEF_ERR(722, LIST_INV_MAX_CAPACITY,
+Max list capacity is less than  starting size)
+
+DEF_ERR(723, CMND_LINE_ARGC_INV_NUM,
+Invalid number 0f command line arguments)
+
+DEF_ERR(724, LIST_INVALID_INDEX,
+Invalid index of element)
+
+DEF_ERR(725, LIST_INV_BASE_HASH,
+Invalid list structure base hash)
+
+DEF_ERR(726, LIST_INV_DATA_HASH,
+Invalid list structure data hash)
+
+DEF_ERR(727, LIST_INV_NEXT_HASH,
+Invalid list structure next hash)
+
+DEF_ERR(728, LIST_PREV_IS_NULL,
+Null pointer to the prev indexes array)
+
+DEF_ERR(729, LIST_INV_PREV_HASH,
+Invalid previous element array hash)
+
+DEF_ERR(730, LIST_DATA_PTR_CHANGED,
+Data pointer do not match with his correct value)
+
+DEF_ERR(731, LIST_NEXT_PTR_CHANGED,
+Next pointer do not match with his correct value)
+
+DEF_ERR(732, LIST_PREV_PTR_CHANGED,
+Prev pointer do not match with his correct value)
+
+DEF_ERR(733, LIST_INV_SELF_PTR,
+Invalid self pointer of list structure)
+
+DEF_ERR(734, LIST_INV_TAIL_NEXT,
+Next element index for tail is not zero)
+
+DEF_ERR(735, LIST_INV_HEAD_PREV,
+Previous element index for head element is not zero)
+
+DEF_ERR(736, LIST_INV_PREV_FOR_FREE_ELEM,
+Invalid free element: prev for free element is not -1)
+
+DEF_ERR(739, LIST_INV_FREE,
+List->free invalid value)
+
+DEF_ERR(740, INV_LOGICAL_NUMBER,
+Invalid number of element in logical order)
+
+DEF_ERR(741, LIST_CONNECTIONS_RUINED,
+Connections in list were ruined)
+
+DEF_ERR(742, LIST_PREV_IS_INCORRECT,
+List->prev is -1 for not empty element)
+
+DEF_ERR(743, LIST_ELEMENT_LOOP,
+Elements in list are looped)
+
+DEF_ERR(744, LIST_INVALID_FREE_AMOUNT,
+Invalid number of free eleemnts in list)
+
+DEF_ERR(745, INV_IS_LINEARIZED_VALUE,
+List->is_linearized has invalid value (value can be only 1 or 0))
+
+DEF_ERR(746, LIST_PUSH_FIRST_TEST_FAILED,
+Push_first work test was failed. Check out logs to have more information)
+
+DEF_ERR(747, LIST_POP_LAST_TEST_FAILED,
+Pop_last work test was failed. Check out logs to have more information)
+
+DEF_ERR(748, LIST_PUSH_BACK_TEST_FAILED,
+Push_back work test was failed. Check out logs to have more information)
+
+DEF_ERR(749, LIST_DATA_IS_EMPTY,
+List->data on index is empty after push)
+
+DEF_ERR(750, LIST_INV_PREV,
+Incorrect previous element)
+
+DEF_ERR(751, LIST_INV_NEXT,
+Incorrect next element)
+
+DEF_ERR(752, LIST_INV_DATA,
+Incorrect data in list)
+
+DEF_ERR(753, LIST_CTOR_ERR,
+An error occured during constructing list)
+
+DEF_ERR(754, LIST_DTOR_ERR,
+An error iccured duting destruction list)
+
+DEF_ERR(755, LIST_POP_INV_RET_VALUE,
+Incorrect returned value from list)
+
+DEF_ERR(756, LIST_INV_SIZE,
+Invalid size of list)
+
+DEF_ERR(757, LIST_POP_BACK_TEST_FAILED,
+Pop_back work test was failed. Check out logs to have more information)
+
+DEF_ERR(758, LIST_PUSH_FRONT_TEST_FAILED,
+Push_front work test was failed. Check out logs to have more information)
+
+DEF_ERR(759, LIST_POP_FRONT_TEST_FAILED,
+Pop_front work test was failed. Check out logs to have more information)
+
+DEF_ERR(760, LIST_PUSH_AFTER_INDEX_TEST_FAILED,
+Push_after_index test was failed. Check out logs to have more information)
+
+DEF_ERR(761, LIST_PUSH_BEFORE_INDEX_TEST_FAILED,
+Push_before_index test was failed. Check out logs to have more information)
+
+DEF_ERR(762, LIST_POP_BY_INDEX_TEST_FAILED,
+Pop_by_index test was failed. Check out logs to have more information)
+
+DEF_ERR(763, TEST_CRITICAL_ERR,
+Critical error occured during list unit resting)
+
+DEF_ERR(764, LIST_CTOR_TEST_FAILED,
+List_ctor test was failed. Check out logs to have more information)
+
+
+DEF_ERR(801, INV_TREE_PTR,
+Null pointer to the tree structure)
+
+DEF_ERR(802, INV_NODE_PTR,
+Null pointer to the node structure)
+
+DEF_ERR(803, TREE_STRUCT_CTOR_UNPREPARED,
+Tree structure is unprepared for constructing)
+
+DEF_ERR(804, INV_NODE_DOT_PTR,
+Null pointer to the node_dot helping structure)
+
+DEF_ERR(805, ADD_SON_ERROR,
+Can not add son to the node due to it already exists)
+
+DEF_ERR(806, BUFFER_STRUCT_INV_PTR,
+Null pointer to thw buffer structure)
+
+DEF_ERR(807, TREE_TEXT_INV_SYNTAXIS,
+Invalid syntaxis in text file with tree base)
+
+DEF_ERR(808, TREE_TEXT_EMPTY_NODE_NAME,
+Empty name for node in text file with tree base)
+
+DEF_ERR(809, TREE_TEXT_NO_CLOSING_BRACKET,
+No closing bracket in text file with tree base)
+
+DEF_ERR(810, NODE_INV_SPECIAL_FLAG,
+Node with special flag true do not have sons)
+
+DEF_ERR(811, INV_NODE_NAME,
+Invalid name of the node)
+
+DEF_ERR(812, INV_COMPARE_OBJ_PTR,
+Invalid pointer to the compare_obj structure)
+
+DEF_ERR(813, TREE_INV_SEARCH,
+Search for the node that is not an object)
+
+DEF_ERR(814, INV_CASE_IN_AKINATOR_MENU,
+Invalid answer case in menu. How it even possible?)
+
+DEF_ERR(815, AKINATOR_INPUT_ERR,
+Akinator error during read from console)
+

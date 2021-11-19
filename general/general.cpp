@@ -6,6 +6,71 @@
 
 //===================================================================
 
+int _clearstdin(LOG_PARAMS) {
+
+    general_log_report();
+
+    while (getchar() != '\n') {;}
+
+    return 0;
+}
+
+//===================================================================
+
+FILE* _open_file(const char* filename, const char* mode, LOG_PARAMS) {
+
+    general_log_report();
+
+    if (filename == NULL) {
+
+        error_report(INV_FILE_NAME);
+        return NULL;
+    }
+
+    if (mode == NULL) {
+
+        error_report(INV_FOPEN_MODE);
+        return NULL;
+    }
+
+    FILE* file_ptr = fopen(filename, mode);
+    if (file_ptr == NULL) {
+
+        error_report(FOPEN_ERROR);
+        return NULL;
+    }
+
+    return file_ptr;
+}
+
+//===================================================================
+
+int _close_file(FILE* file_ptr, LOG_PARAMS) {
+
+    general_log_report();
+
+    if (file_ptr == NULL) {
+
+        error_report(INV_FILE_PTR);
+        return -1;
+    }
+
+    int is_ok = fclose(file_ptr);
+    if (is_ok == EOF) {
+
+        error_report(FCLOSE_ERR);
+        return -1;
+    }
+
+    return 0;
+}
+
+//===================================================================
+
+int _close_file(FILE* file_prt);
+
+//===================================================================
+
 int my_swap(void* first_, void* second_, size_t size) {
 
 	assert(first_  != NULL);
