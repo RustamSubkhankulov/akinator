@@ -2,6 +2,7 @@
 
 #include "akinator_config.h"
 #include "../tree/tree.h"
+#include "akin_memory.h"
 
 //===================================================================
 
@@ -129,14 +130,8 @@ enum akinator_menu_answers {
 #define akinator_add_object(tree, node) \
        _akinator_add_object(tree, node, LOG_ARGS)
 
-#define akinator_init_new_node(node, data) \
-       _akinator_init_new_node(node, data, LOG_ARGS)
-
 #define akinator_save_changes(tree) \
        _akinator_save_changes(tree, LOG_ARGS)
-
-#define akinator_free_allocated_mem() \
-       _akinator_free_allocated_mem(LOG_ARGS)
 
 //===================================================================
 
@@ -194,8 +189,6 @@ int _akinator_play_guess(struct Tree* tree, LOG_PARAMS);
 int _akinator_play_definition(struct Tree* tree, LOG_PARAMS);
 
 int _akinator_play_game(struct Tree* tree, LOG_PARAMS);
-
-int _akinator_free_allocated_mem(LOG_PARAMS);
 
 //===================================================================
 

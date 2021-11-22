@@ -10,7 +10,10 @@
 
 #define HACK_PENTAGON
 
+
 #define ESPEAK
+
+const int Speak_buffer_size = 300;
 
 //===================================================================
 

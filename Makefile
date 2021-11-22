@@ -4,11 +4,14 @@ CFLAGS = -lubsan -D DEBUG -g -std=c++14 -fmax-errors=1 -Wall -Wextra -Weffc++ -W
 
 all: global 
 
-global: obj/akinator.o obj/general.o obj/logs.o obj/tree.o obj/main.o obj/stack.o obj/text.o
-	g++ obj/akinator.o obj/general.o obj/logs.o obj/tree.o obj/main.o obj/stack.o obj/text.o -o akinator.exe $(CFLAGS)
+global: obj/akinator.o obj/general.o obj/logs.o obj/tree.o obj/main.o obj/stack.o obj/text.o obj/akin_memory.o
+	g++ obj/akinator.o obj/general.o obj/logs.o obj/tree.o obj/main.o obj/stack.o obj/text.o obj/akin_memory.o -o akinator.exe $(CFLAGS)
 
 obj/akinator.o: akinator/akinator.cpp akinator/akinator.h akinator/akinator_config.h
 	$(CC) akinator/akinator.cpp -c -o obj/akinator.o $(CFLAGS)
+
+obj/akin_memory.o: akinator/akin_memory.cpp akinator/akin_memory.h
+	$(CC) akinator/akin_memory.cpp -c -o obj/akin_memory.o $(CFLAGS)
 
 obj/general.o: general/general.cpp general/general.h
 	$(CC) general/general.cpp -c -o obj/general.o $(CFLAGS)

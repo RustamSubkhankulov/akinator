@@ -1,4 +1,5 @@
 #include "akinator/akinator.h"
+#include "akinator/akin_memory.h"
 #include "text_processing/text_processing.h"
 
 #include "general/general.h"

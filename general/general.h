@@ -2,6 +2,7 @@
 
 #include "../logs/errors_and_logs.h"
 #include "../logs/log_definitions.h"
+#include "../akinator/akinator_config.h"
 
 //===================================================================
 
@@ -13,16 +14,28 @@
 
     #define print_and_speak(string) {                                   \
                                                                         \
-        ___System_Sleep(1);                                             \
+        printf("\n\n%s\n\n", string);                                   \
                                                                         \
-        printf("\n%s\n", string);                                       \
+        system("espeak [" #string "]");                                 \
+    }
+
+//-------------------------------------------------------------------
+
+    #define fprint_and_speak(output, string) {                          \
                                                                         \
-        system("espeak       [" #string "]");                           \
+        fprintf(output, "\n\n%s\n\n", string);                          \
+                                                                        \
+        if (output == stdout)                                           \
+            system("espeak [" #string "]");                             \
     }
 
 #else
 
-    #define print_and_speak(string) printf(string);
+    #define print_and_speak(string) \
+            printf("\n\n%s\n\n", string);
+
+    #define fprint_and_speak(output, string) \
+            fprintf(output, "\n\n%s\n\n", string);
 
 #endif
 
